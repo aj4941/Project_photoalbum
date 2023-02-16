@@ -1,9 +1,13 @@
 package com.squarecross.photoalbum.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Date;
 @Entity
 @Table(name = "Photo", schema = "photo_album", uniqueConstraints = {@UniqueConstraint(columnNames = "photo_id")})
+@Getter @Setter
 public class Photo {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "photo_id", unique = true, nullable = false)
