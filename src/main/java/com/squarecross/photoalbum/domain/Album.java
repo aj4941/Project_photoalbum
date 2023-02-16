@@ -21,6 +21,6 @@ public class Album {
     @Column(name = "created_at", unique = false, nullable = true)
     @CreationTimestamp
     private Date createdAt;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "album")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "album") // 매핑관계 연결시에는 항상 LAZY로 연결한다.
     private List<Photo> photos = new ArrayList<>();
 }
