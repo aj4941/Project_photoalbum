@@ -32,4 +32,9 @@ public class AlbumController {
         AlbumDto album = albumService.getAlbum(albumIdMap.get("albumId"));
         return new ResponseEntity<>(album, HttpStatus.OK);
     }
+
+//    @PostMapping
+//    public ResponseEntity<AlbumDto> createAlbum(@RequestBody AlbumDto albumDto) {
+
+//    }
 }
