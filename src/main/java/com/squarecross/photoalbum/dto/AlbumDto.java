@@ -4,11 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter @Setter
 public class AlbumDto {
-    Long albumId;
-    String albumName;
-    Date createdAt;
-    int count;
+    private Long albumId;
+    private String albumName;
+    private Date createdAt;
+    private int count;
+    private List<String> thumbUrls;
 }
