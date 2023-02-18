@@ -14,6 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
+import java.io.IOException;
+import java.nio.file.Files;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -79,5 +82,14 @@ class AlbumServiceTest {
 
         AlbumDto albumDto = albumService.getAlbum(savedAlbum.getAlbumId());
         assertThat(albumDto.getCount()).isEqualTo(3);
+    }
+    @Test
+    void testAlbumCreate() throws IOException {
+        AlbumDto albumDto = new AlbumDto();
+        albumDto.setAlbumName("테스트");
+        AlbumDto createAlbumDto = albumService.createAlbum(albumDto);
+        assertThat(albumDto.getAlbumName()).isEqualTo(createAlbumDto.getAlbumName());
+
+        albumService.deleteAlbumDirectories(createAlbumDto);
     }
 }

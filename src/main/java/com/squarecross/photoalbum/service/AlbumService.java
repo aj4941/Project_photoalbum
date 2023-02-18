@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
@@ -50,7 +51,13 @@ public class AlbumService {
     }
 
     private void createAlbumDirectories(Album album) throws IOException {
-        Files.createDirectories(Paths.get(PATH_PREFIX + "/photos/original" + album.getAlbumId()));
-        Files.createDirectories(Paths.get(PATH_PREFIX + "photos/thumb" + album.getAlbumId()));
+        Files.createDirectories(Paths.get(PATH_PREFIX + "/photos/original/" + album.getAlbumId()));
+        Files.createDirectories(Paths.get(PATH_PREFIX + "/photos/thumb/" + album.getAlbumId()));
+    }
+
+    // 같은 클래스 내에서 사용되지 못하므로 private로 사용하면 안된다.
+    public void deleteAlbumDirectories(AlbumDto albumDto) throws IOException {
+        Files.delete(Path.of(PATH_PREFIX + "/photos/original/" + albumDto.getAlbumId()));
+        Files.delete(Path.of(PATH_PREFIX + "/photos/thumb/" + albumDto.getAlbumId()));
     }
 }
