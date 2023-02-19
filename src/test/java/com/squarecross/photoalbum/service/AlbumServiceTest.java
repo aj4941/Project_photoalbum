@@ -71,15 +71,15 @@ class AlbumServiceTest {
         Album savedAlbum = albumRepository.save(album);
 
         Photo photo1 = new Photo();
-        photo1.setFile_name("사진1"); photo1.setAlbum(savedAlbum);
+        photo1.setFileName("사진1"); photo1.setAlbum(savedAlbum);
         photoRepository.save(photo1);
 
         Photo photo2 = new Photo();
-        photo2.setFile_name("사진2"); photo2.setAlbum(savedAlbum);
+        photo2.setFileName("사진2"); photo2.setAlbum(savedAlbum);
         photoRepository.save(photo2);
 
         Photo photo3 = new Photo();
-        photo3.setFile_name("사진3"); photo3.setAlbum(savedAlbum);
+        photo3.setFileName("사진3"); photo3.setAlbum(savedAlbum);
         photoRepository.save(photo3);
 
         AlbumDto albumDto = albumService.getAlbum(savedAlbum.getAlbumId());
@@ -118,4 +118,21 @@ class AlbumServiceTest {
         assertEquals("aaab", resName.get(1).getAlbumName());
         assertEquals(2, resName.size());
     }
+
+    @Test
+    void testChangeAlbumName() throws IOException {
+        AlbumDto albumDto = new AlbumDto();
+        albumDto.setAlbumName("변경전");
+        AlbumDto res = albumService.createAlbum(albumDto);
+
+        Long albumId = res.getAlbumId();
+        AlbumDto updateDto = new AlbumDto();
+        updateDto.setAlbumName("변경후");
+        albumService.changeName(albumId, updateDto);
+
+        AlbumDto updatedDto = albumService.getAlbum(albumId);
+
+        assertEquals("변경후", updatedDto.getAlbumName());
+    }
+
 }

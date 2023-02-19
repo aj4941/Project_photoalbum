@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -94,5 +95,18 @@ public class AlbumService {
         }
 
         return albumDtos;
+    }
+
+    public AlbumDto changeName(Long albumId, AlbumDto albumDto) {
+        Optional<Album> album = albumRepository.findById(albumId);
+        if (album.isEmpty()) {
+            throw new NoSuchElementException(
+                    String.format("Album Id %d가 존재하지 않습니다.", albumId));
+        }
+
+        Album updateAlbum = album.get();
+        updateAlbum.setAlbumName(albumDto.getAlbumName());
+        Album savedAlbum = albumRepository.save(updateAlbum);
+        return AlbumMapper.convertToDto(savedAlbum);
     }
 }
