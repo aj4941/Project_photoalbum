@@ -11,12 +11,12 @@ import java.util.Date;
 public class Photo {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "photo_id", unique = true, nullable = false)
-    private Long photo_id;
-    private String file_name;
-    private String thumb_url;
-    private String original_url;
-    private int file_size;
-    private Date uploaded_at;
+    private Long photoId; // camel case (java 코드에서는 camel, DB에서는 snake case를 주로 사용)
+    private String fileName;
+    private String thumbUrl;
+    private String originalUrl;
+    private int fileSize;
+    private Date uploadedAt;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id")
     private Album album;

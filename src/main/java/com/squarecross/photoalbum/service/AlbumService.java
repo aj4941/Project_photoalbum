@@ -82,7 +82,7 @@ public class AlbumService {
             List<Photo> top4 =
                     photoRepository.findTop4ByAlbum_AlbumIdOrderByUploadedAtDesc(albumDto.getAlbumId());
             albumDto.setThumbUrls(top4.stream()
-                                    .map(Photo::getThumb_url)
+                                    .map(Photo::getThumbUrl)
                                     .map(c -> PATH_PREFIX + c)
                                     .collect(Collectors.toList()));
         }
