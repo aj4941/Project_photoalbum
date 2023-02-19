@@ -41,10 +41,11 @@ public class AlbumController {
         return new ResponseEntity<>(savedAlbumDto, HttpStatus.OK); // body header status
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<AlbumDto>> getAlbumList(
-//            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
-//            @RequestParam(value = "sort", required = false, defaultValue = "byDate") String sort) {
-//
-//    }
+    @GetMapping
+    public ResponseEntity<List<AlbumDto>> getAlbumList(
+            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+            @RequestParam(value = "sort", required = false, defaultValue = "byDate") String sort) {
+        List<AlbumDto> albumDtos = albumService.getAlbumList(keyword, sort);
+        return new ResponseEntity<>(albumDtos, HttpStatus.OK);
+    }
 }
