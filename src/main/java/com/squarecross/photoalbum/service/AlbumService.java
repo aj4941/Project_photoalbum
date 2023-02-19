@@ -103,10 +103,23 @@ public class AlbumService {
             throw new NoSuchElementException(
                     String.format("Album Id %d가 존재하지 않습니다.", albumId));
         }
-
         Album updateAlbum = album.get();
         updateAlbum.setAlbumName(albumDto.getAlbumName());
         Album savedAlbum = albumRepository.save(updateAlbum);
         return AlbumMapper.convertToDto(savedAlbum);
+    }
+    public void deleteAlbum(Long albumId) throws EntityNotFoundException, IOException {
+        Optional<Album> res = albumRepository.findById(albumId);
+        if (res.isPresent()) {
+            Album album = res.get();
+            AlbumDto albumDto = AlbumMapper.convertToDto(album);
+            deleteAlbumDirectories(albumDto);
+            albumRepository.deleteById(albumId);
+        }
+        else {
+            throw new EntityNotFoundException(
+                    String.format("Album Id %d가 존재하지 않습니다.", albumId));
+        }
+
     }
 }
