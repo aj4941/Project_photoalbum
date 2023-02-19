@@ -16,6 +16,8 @@ import javax.transaction.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -91,5 +93,29 @@ class AlbumServiceTest {
         assertThat(albumDto.getAlbumName()).isEqualTo(createAlbumDto.getAlbumName());
 
         albumService.deleteAlbumDirectories(createAlbumDto);
+    }
+
+    @Test
+    void testAlbumRepository() throws InterruptedException {
+        // given
+        Album album1 = new Album();
+        Album album2 = new Album();
+        album1.setAlbumName("aaaa"); album2.setAlbumName("aaab");
+
+        // when
+        albumRepository.save(album1);
+        TimeUnit.SECONDS.sleep(1);
+        albumRepository.save(album2);
+
+        // then
+        List<Album> resDate = albumRepository.findByAlbumNameContainingOrderByCreatedAtDesc("aaa");
+        assertEquals("aaab", resDate.get(0).getAlbumName());
+        assertEquals("aaaa", resDate.get(1).getAlbumName());
+        assertEquals(2, resDate.size());
+
+        List<Album> resName = albumRepository.findByAlbumNameContainingOrderByAlbumNameAsc("aaa");
+        assertEquals("aaaa", resName.get(0).getAlbumName());
+        assertEquals("aaab", resName.get(1).getAlbumName());
+        assertEquals(2, resName.size());
     }
 }
