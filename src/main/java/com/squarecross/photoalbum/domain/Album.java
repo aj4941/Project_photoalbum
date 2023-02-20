@@ -24,6 +24,11 @@ public class Album {
     @CreationTimestamp
     private Date createdAt;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "album", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Photo> photos = new ArrayList<>();
+
+    public void addPhoto(Photo photo) {
+        photos.add(photo);
+        photo.setAlbum(this);
+    }
 }

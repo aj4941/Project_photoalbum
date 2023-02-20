@@ -6,10 +6,12 @@ import com.squarecross.photoalbum.dto.AlbumDto;
 import com.squarecross.photoalbum.mapper.AlbumMapper;
 import com.squarecross.photoalbum.repository.AlbumRepository;
 import com.squarecross.photoalbum.repository.PhotoRepository;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,6 +30,7 @@ public class AlbumService {
     private AlbumRepository albumRepository;
     @Autowired
     private PhotoRepository photoRepository;
+
     public AlbumDto getAlbum(Long albumId) {
         Optional<Album> res = albumRepository.findById(albumId);
         if (res.isPresent()) {
@@ -40,22 +43,16 @@ public class AlbumService {
                     (String.format("앨범 아이디 %d로 조회되지 않았습니다.", albumId));
     }
     public Album getAlbumByName(String albumName) {
-        Optional<Album> res = Optional.ofNullable(albumRepository.findByAlbumName(albumName));
-        if (res.isPresent())
-            return res.get();
-        else
-            throw new EntityNotFoundException(
-                    String.format("앨범 이름 %s로 조회되지 않았습니다.", albumName));
+        Album res = albumRepository.findByAlbumName(albumName);
+        return res;
     }
-
     public AlbumDto createAlbum(AlbumDto albumDto) throws IOException {
         Album album = AlbumMapper.convertToModel(albumDto);
         albumRepository.save(album);
         createAlbumDirectories(album);
         return AlbumMapper.convertToDto(album);
     }
-
-    private void createAlbumDirectories(Album album) throws IOException {
+    void createAlbumDirectories(Album album) throws IOException {
         Files.createDirectories(Paths.get(PATH_PREFIX + "/photos/original/" + album.getAlbumId()));
         Files.createDirectories(Paths.get(PATH_PREFIX + "/photos/thumb/" + album.getAlbumId()));
     }
@@ -64,6 +61,14 @@ public class AlbumService {
     public void deleteAlbumDirectories(AlbumDto albumDto) throws IOException {
         Files.delete(Path.of(PATH_PREFIX + "/photos/original/" + albumDto.getAlbumId()));
         Files.delete(Path.of(PATH_PREFIX + "/photos/thumb/" + albumDto.getAlbumId()));
+    }
+    public void deleteAlbumDirectories(Album album) throws IOException {
+        Files.delete(Path.of(PATH_PREFIX + "/photos/original/" + album.getAlbumId()));
+        Files.delete(Path.of(PATH_PREFIX + "/photos/thumb/" + album.getAlbumId()));
+    }
+    public void deleteAlbumFiles(Album album) throws IOException {
+        FileUtils.cleanDirectory(new File(Constants.PATH_PREFIX + "/photos/original/" + album.getAlbumId()));
+        FileUtils.cleanDirectory(new File(Constants.PATH_PREFIX + "/photos/thumb/" + album.getAlbumId()));
     }
     public List<AlbumDto> getAlbumList(String keyword, String sort, String orderBy) {
         List<Album> albums;
@@ -93,10 +98,8 @@ public class AlbumService {
                                     .map(c -> PATH_PREFIX + c)
                                     .collect(Collectors.toList()));
         }
-
         return albumDtos;
     }
-
     public AlbumDto changeName(Long albumId, AlbumDto albumDto) {
         Optional<Album> album = albumRepository.findById(albumId);
         if (album.isEmpty()) {
@@ -112,14 +115,13 @@ public class AlbumService {
         Optional<Album> res = albumRepository.findById(albumId);
         if (res.isPresent()) {
             Album album = res.get();
-            AlbumDto albumDto = AlbumMapper.convertToDto(album);
-            deleteAlbumDirectories(albumDto);
+            deleteAlbumFiles(album);
+            deleteAlbumDirectories(album);
             albumRepository.deleteById(albumId);
         }
         else {
             throw new EntityNotFoundException(
                     String.format("Album Id %d가 존재하지 않습니다.", albumId));
         }
-
     }
 }

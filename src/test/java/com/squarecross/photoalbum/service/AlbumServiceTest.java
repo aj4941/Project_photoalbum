@@ -5,11 +5,13 @@ import com.squarecross.photoalbum.domain.Photo;
 import com.squarecross.photoalbum.dto.AlbumDto;
 import com.squarecross.photoalbum.repository.AlbumRepository;
 import com.squarecross.photoalbum.repository.PhotoRepository;
+import jdk.swing.interop.SwingInterOpUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AssertionsKt;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
@@ -17,6 +19,8 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -85,6 +89,35 @@ class AlbumServiceTest {
         AlbumDto albumDto = albumService.getAlbum(savedAlbum.getAlbumId());
         assertThat(albumDto.getCount()).isEqualTo(3);
     }
+
+    @Test
+    void testAlbumDelete() throws IOException {
+        // given
+        Album album = new Album();
+        album.setAlbumName("테스트");
+        Photo photo = new Photo();
+        photo.setFileName("테스트 사진");
+        album.addPhoto(photo);
+
+        Album savedAlbum = albumRepository.save(album);
+        Long albumId = savedAlbum.getAlbumId();
+
+        Photo savedPhoto = photoRepository.save(photo);
+        Long photoId = savedPhoto.getPhotoId();
+
+        albumService.createAlbumDirectories(savedAlbum);
+
+        // when
+        albumService.deleteAlbum(savedAlbum.getAlbumId());
+
+        // then
+        Optional<Album> findAlbum = albumRepository.findById(albumId);
+        assertEquals(Optional.empty(), findAlbum);
+
+        Optional<Photo> findPhoto = photoRepository.findById(photoId);
+        assertEquals(Optional.empty(), findPhoto);
+    }
+
     @Test
     void testAlbumCreate() throws IOException {
         AlbumDto albumDto = new AlbumDto();
@@ -134,5 +167,4 @@ class AlbumServiceTest {
 
         assertEquals("변경후", updatedDto.getAlbumName());
     }
-
 }
