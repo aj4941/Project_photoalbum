@@ -53,20 +53,11 @@ class AlbumServiceTest {
 
         // when
         Album findAlbum = albumService.getAlbumByName("테스트");
+        Album findNotAlbum = albumService.getAlbumByName("xxxxx");
 
         // then
         assertThat(findAlbum).isEqualTo(savedAlbum);
-
-        // given
-        Album hasNotAlbum = new Album();
-        hasNotAlbum.setAlbumName("테스트2");
-
-        // when
-        Album savedAlbum2 = albumRepository.save(hasNotAlbum);
-
-        // then
-        assertThrows(EntityNotFoundException.class,
-                () -> albumService.getAlbumByName("xxxxx"));
+        assertEquals(findNotAlbum, null);
     }
     @Test
     void testPhotoCount() {
