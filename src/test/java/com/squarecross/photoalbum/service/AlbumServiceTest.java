@@ -102,7 +102,7 @@ class AlbumServiceTest {
         Album savedAlbum = albumRepository.save(album);
         Long albumId = savedAlbum.getAlbumId();
 
-        Photo savedPhoto = photoRepository.save(photo);
+        Photo savedPhoto = photoRepository.findByAlbum_AlbumId(savedAlbum.getAlbumId());
         Long photoId = savedPhoto.getPhotoId();
 
         albumService.createAlbumDirectories(savedAlbum);
