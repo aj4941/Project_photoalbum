@@ -22,25 +22,29 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.squarecross.photoalbum.mapper.AlbumMapper.convertToDto;
 import static com.squarecross.photoalbum.service.Constants.*;
 
 @Service
 public class AlbumService {
+
     @Autowired
     private AlbumRepository albumRepository;
+
     @Autowired
     private PhotoRepository photoRepository;
 
     public AlbumDto getAlbum(Long albumId) {
         Optional<Album> res = albumRepository.findById(albumId);
         if (res.isPresent()) {
-            AlbumDto albumDto = AlbumMapper.convertToDto(res.get());
+            AlbumDto albumDto = convertToDto(res.get());
             albumDto.setCount(photoRepository.countByAlbum_AlbumId(albumId));
             return albumDto;
         }
-        else
+        else {
             throw new EntityNotFoundException
                     (String.format("앨범 아이디 %d로 조회되지 않았습니다.", albumId));
+        }
     }
     public Album getAlbumByName(String albumName) {
         Album res = albumRepository.findByAlbumName(albumName);
@@ -50,7 +54,7 @@ public class AlbumService {
         Album album = AlbumMapper.convertToModel(albumDto);
         albumRepository.save(album);
         createAlbumDirectories(album);
-        return AlbumMapper.convertToDto(album);
+        return convertToDto(album);
     }
     void createAlbumDirectories(Album album) throws IOException {
         Files.createDirectories(Paths.get(PATH_PREFIX + "/photos/original/" + album.getAlbumId()));
@@ -100,17 +104,17 @@ public class AlbumService {
         }
         return albumDtos;
     }
+
     public AlbumDto changeName(Long albumId, AlbumDto albumDto) {
         Optional<Album> album = albumRepository.findById(albumId);
         if (album.isEmpty()) {
-            throw new NoSuchElementException(
-                    String.format("Album Id %d가 존재하지 않습니다.", albumId));
+            throw new NoSuchElementException(String.format("Album ID %d가 존재하지 않습니다.", albumId));
         }
-        Album updateAlbum = album.get();
-        updateAlbum.setAlbumName(albumDto.getAlbumName());
-        Album savedAlbum = albumRepository.save(updateAlbum);
-        return AlbumMapper.convertToDto(savedAlbum);
+        Album updatedAlbum = album.get();
+        updatedAlbum.setAlbumName(albumDto.getAlbumName());
+        return convertToDto(updatedAlbum);
     }
+
     public void deleteAlbum(Long albumId) throws EntityNotFoundException, IOException {
         Optional<Album> res = albumRepository.findById(albumId);
         if (res.isPresent()) {

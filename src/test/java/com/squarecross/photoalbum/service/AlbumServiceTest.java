@@ -32,12 +32,16 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 class AlbumServiceTest {
+
     @Autowired
     AlbumRepository albumRepository;
+
     @Autowired
     PhotoRepository photoRepository;
+
     @Autowired
     AlbumService albumService;
+
     @Test
     void getAlbum() {
         Album album = new Album();
@@ -154,17 +158,20 @@ class AlbumServiceTest {
 
     @Test
     void testChangeAlbumName() throws IOException {
+        // given
         AlbumDto albumDto = new AlbumDto();
         albumDto.setAlbumName("변경전");
         AlbumDto res = albumService.createAlbum(albumDto);
-
         Long albumId = res.getAlbumId();
+
         AlbumDto updateDto = new AlbumDto();
         updateDto.setAlbumName("변경후");
         albumService.changeName(albumId, updateDto);
 
+        // when
         AlbumDto updatedDto = albumService.getAlbum(albumId);
 
+        // then
         assertEquals("변경후", updatedDto.getAlbumName());
     }
 }
