@@ -158,20 +158,20 @@ class AlbumServiceTest {
 
     @Test
     void testChangeAlbumName() throws IOException {
+
         // given
         AlbumDto albumDto = new AlbumDto();
         albumDto.setAlbumName("변경전");
-        AlbumDto res = albumService.createAlbum(albumDto);
-        Long albumId = res.getAlbumId();
+        Long albumId = albumService.createAlbum(albumDto).getAlbumId();
 
         AlbumDto updateDto = new AlbumDto();
         updateDto.setAlbumName("변경후");
-        albumService.changeName(albumId, updateDto);
 
         // when
-        AlbumDto updatedDto = albumService.getAlbum(albumId);
+        albumService.changeName(albumId, updateDto);
 
         // then
-        assertEquals("변경후", updatedDto.getAlbumName());
+        AlbumDto findAlbumDto = albumService.getAlbum(albumId);
+        assertEquals("변경후", findAlbumDto.getAlbumName());
     }
 }
