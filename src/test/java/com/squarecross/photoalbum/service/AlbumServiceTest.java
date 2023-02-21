@@ -18,11 +18,14 @@ import javax.transaction.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import static com.squarecross.photoalbum.service.Constants.PATH_PREFIX;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -111,10 +114,16 @@ class AlbumServiceTest {
 
     @Test
     void testAlbumCreate() throws IOException {
+        // given
         AlbumDto albumDto = new AlbumDto();
         albumDto.setAlbumName("테스트");
+
+        // when
         AlbumDto createAlbumDto = albumService.createAlbum(albumDto);
-        assertThat(albumDto.getAlbumName()).isEqualTo(createAlbumDto.getAlbumName());
+        Path path = Paths.get(PATH_PREFIX + "/photos/original/" + createAlbumDto.getAlbumId());
+
+        // then
+        assertTrue(Files.exists(path));
 
         albumService.deleteAlbumDirectories(createAlbumDto);
     }
