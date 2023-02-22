@@ -55,7 +55,7 @@ public class PhotoService {
         String fileName = file.getOriginalFilename(); // 파일 이름을 얻는 메서드
         int fileSize = (int) file.getSize(); // 파일 크기를 얻는 메서드
 
-        fileName = getNextFileName(fileName, albumId);
+        fileName = getNextFileName(fileName, albumId); // 같은 파일명이 존재하면 NextFileName 반환
         saveFile(file, albumId, fileName);
 
         Photo photo = new Photo();
@@ -84,12 +84,16 @@ public class PhotoService {
     }
 
     private void saveFile(MultipartFile file, Long albumId, String fileName) throws IOException {
+
         String filePath = albumId + "/" + fileName;
-        // 경로를 읽어서 file에 저장
+        // 원본 이미지를 original 사진 경로에 저장
         Files.copy(file.getInputStream(), Paths.get(original_path + "/" + filePath));
 
-        BufferedImage thumbImg = Scalr.resize(ImageIO.read(file.getInputStream()), Constants.THUMB_SIZE, Constants.THUMB_SIZE);
+        // 이미지 사이즈를 THUMB_SIZE * THUMB_SIZE로 수정
+        BufferedImage thumbImg = Scalr.resize(ImageIO.read(file.getInputStream()),
+                Constants.THUMB_SIZE, Constants.THUMB_SIZE);
 
+        // Resize된 썸네일 사진을 넣기 위해 파일을 만들고 썸네일 이미지 저장
         File thumbFile = new File(thumb_path + "/" + filePath);
         String ext = StringUtils.getFilenameExtension(fileName);
         if (ext == null) {
