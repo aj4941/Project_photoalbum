@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,10 +27,18 @@ public class PhotoController {
         return new ResponseEntity<>(photoDto, HttpStatus.OK);
     }
 
-//    @PostMapping
-//    public ResponseEntity<List<Photo>> uploadPhotos(
-//            @PathVariable("albumId") Long albumId,
-//            @RequestParam("photos") MultipartFile[] files) {
+    @PostMapping
+    public ResponseEntity<List<PhotoDto>> uploadPhotos(
+            @PathVariable("albumId") Long albumId,
+            @RequestParam("photos") MultipartFile[] files) throws IOException {
             // photos 입력 필드로 업로드된 파일이 files 배열 객체 안에 저장
-//    }
+
+        List<PhotoDto> photos = new ArrayList<>();
+        for (MultipartFile file : files) {
+            PhotoDto photoDto = photoService.savePhoto(file, albumId);
+            photos.add(photoDto);
+        }
+
+        return new ResponseEntity<>(photos, HttpStatus.OK);
+    }
 }
