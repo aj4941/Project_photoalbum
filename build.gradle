@@ -29,6 +29,7 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'org.hibernate:hibernate-search:5.11.1.Final'
 	implementation 'org.imgscalr:imgscalr-lib:4.2'
+	implementation 'org.apache.tika:tika-parsers:1.18'
 }
 
 tasks.named('test') {

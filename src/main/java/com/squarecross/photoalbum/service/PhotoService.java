@@ -6,6 +6,8 @@ import com.squarecross.photoalbum.dto.PhotoDto;
 import com.squarecross.photoalbum.mapper.PhotoMapper;
 import com.squarecross.photoalbum.repository.AlbumRepository;
 import com.squarecross.photoalbum.repository.PhotoRepository;
+import org.apache.tika.Tika;
+import org.apache.tika.detect.Detector;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import javax.persistence.EntityNotFoundException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -60,7 +63,7 @@ public class PhotoService {
 
         Photo photo = new Photo();
         photo.setOriginalUrl("/photos/original/" + albumId + "/" + fileName);
-        photo.setThumbUrl("photos/thumb/" + albumId + "/" + fileName);
+        photo.setThumbUrl("/photos/thumb/" + albumId + "/" + fileName);
         photo.setFileName(fileName); photo.setFileSize(fileSize);
         photo.setAlbum(res.get());
         Photo createdPhoto = photoRepository.save(photo);
@@ -84,7 +87,6 @@ public class PhotoService {
     }
 
     private void saveFile(MultipartFile file, Long albumId, String fileName) throws IOException {
-
         String filePath = albumId + "/" + fileName;
         // 원본 이미지를 original 사진 경로에 저장
         Files.copy(file.getInputStream(), Paths.get(original_path + "/" + filePath));
@@ -100,5 +102,12 @@ public class PhotoService {
             throw new IllegalArgumentException("No Extention");
         }
         ImageIO.write(thumbImg, ext, thumbFile);
+    }
+
+    public boolean checkFile(MultipartFile file) throws IOException {
+        InputStream inputStream = file.getInputStream();
+        String mimeType = new Tika().detect(inputStream);
+        inputStream.close();
+        return mimeType.equals("jpg");
     }
 }
