@@ -7,13 +7,10 @@ import com.squarecross.photoalbum.mapper.PhotoMapper;
 import com.squarecross.photoalbum.repository.AlbumRepository;
 import com.squarecross.photoalbum.repository.PhotoRepository;
 import org.apache.tika.Tika;
-import org.apache.tika.detect.Detector;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -194,4 +191,18 @@ public class PhotoService {
         Files.delete(Path.of(url));
     }
 
+    public List<PhotoDto> deletePhotos(List<Long> photoIds) throws IOException {
+        List<Photo> photos = new ArrayList<>();
+        for (Long photoId : photoIds) {
+            Optional<Photo> res = photoRepository.findById(photoId);
+            if (res.isPresent()) {
+                Photo photo = res.get(); photos.add(photo);
+                deleteFiles(PATH_PREFIX + photo.getOriginalUrl());
+                deleteFiles(PATH_PREFIX + photo.getThumbUrl());
+            } else {
+                throw new EntityNotFoundException("에러");
+            }
+        }
+        return PhotoMapper.convertToDtoList(photos);
+    }
 }

@@ -17,7 +17,9 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -89,6 +91,14 @@ public class PhotoController {
             @RequestParam("toAlbumId") Long toAlbumId,
             @RequestParam("photoIds") List<Long> photoIds) throws IOException {
         List<PhotoDto> photoDtos = photoService.movePhotos(fromAlbumId, toAlbumId, photoIds);
+        return new ResponseEntity<>(photoDtos, HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<List<PhotoDto>> deletePhotos(
+            @RequestBody PhotoDto photoDto) throws IOException {
+        List<Long> photoIds = photoDto.getPhotoIds();
+        List<PhotoDto> photoDtos = photoService.deletePhotos(photoIds);
         return new ResponseEntity<>(photoDtos, HttpStatus.OK);
     }
 }
