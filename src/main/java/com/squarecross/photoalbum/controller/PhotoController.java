@@ -6,6 +6,7 @@ import com.squarecross.photoalbum.repository.PhotoRepository;
 import com.squarecross.photoalbum.service.PhotoService;
 import org.apache.tika.io.IOUtils;
 import org.apache.xmlbeans.impl.piccolo.io.IllegalCharException;
+import org.hibernate.engine.jdbc.StreamUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @RestController
 @RequestMapping("/albums/{albumId}/photos")
@@ -52,19 +55,22 @@ public class PhotoController {
 
     @GetMapping("/download")
     public void downloadPhotos(@RequestParam("photoIds") Long[] photoIds,
-                               HttpServletResponse response) {
-        try {
-            if (photoIds.length == 1) {
-                File file = photoService.getImageFile(photoIds[0]);
-                OutputStream outputStream = response.getOutputStream();
-                IOUtils.copy(new FileInputStream(file), outputStream);
-                outputStream.close();
-            }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("Error");
+                               HttpServletResponse response) throws IOException {
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (photoIds.length == 1) {
+            OutputStream outputStream = response.getOutputStream();
+            File file = photoService.getImageFile(photoIds[0]);
+            // Response Outputstream에 기록하는 것이 전송을 의미
+            IOUtils.copy(new FileInputStream(file), outputStream);
+            outputStream.close();
+        } else { // 여러장 다운받을 경우 Zip으로 다운로드 받는다.
+            ZipOutputStream outputStream = new ZipOutputStream(response.getOutputStream());
+            for (Long photoId : photoIds) {
+                File file = photoService.getImageFile(photoId);
+                outputStream.putNextEntry(new ZipEntry(file.getName()));
+                IOUtils.copy(new FileInputStream(file), outputStream);
+            }
+            outputStream.close();
         }
     }
 }

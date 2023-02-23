@@ -25,6 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import static com.squarecross.photoalbum.service.Constants.*;
+
 @Service
 public class PhotoService {
 
@@ -34,8 +36,8 @@ public class PhotoService {
     @Autowired
     private AlbumRepository albumRepository;
 
-    private final String original_path = Constants.PATH_PREFIX + "/photos/original";
-    private final String thumb_path = Constants.PATH_PREFIX + "/photos/thumb";
+    private final String original_path = PATH_PREFIX + "/photos/original";
+    private final String thumb_path = PATH_PREFIX + "/photos/thumb";
 
     public PhotoDto getPhoto(Long photoId) {
         Optional<Photo> res = photoRepository.findById(photoId);
@@ -93,7 +95,7 @@ public class PhotoService {
 
         // 이미지 사이즈를 THUMB_SIZE * THUMB_SIZE로 수정
         BufferedImage thumbImg = Scalr.resize(ImageIO.read(file.getInputStream()),
-                Constants.THUMB_SIZE, Constants.THUMB_SIZE);
+                THUMB_SIZE, THUMB_SIZE);
 
         // Resize된 썸네일 사진을 넣기 위해 파일을 만들고 썸네일 이미지 저장
         File thumbFile = new File(thumb_path + "/" + filePath);
@@ -115,9 +117,8 @@ public class PhotoService {
         Optional<Photo> res = photoRepository.findById(photoId);
         if (res.isEmpty()) {
             throw new EntityNotFoundException(
-                    String.format("사진을 ID %d로 찾을 수 없습니다.", photoId));
+                    String.format("사진을 ID로 찾을 수 없습니다."));
         }
-
-        return new File(Constants.PATH_PREFIX + res.get().getOriginalUrl());
+        return new File(PATH_PREFIX + res.get().getOriginalUrl());
     }
 }
