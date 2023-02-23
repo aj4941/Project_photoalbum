@@ -73,4 +73,13 @@ public class PhotoController {
             outputStream.close();
         }
     }
+
+    @GetMapping
+    public ResponseEntity<List<PhotoDto>> getPhotoList(
+            @RequestParam(value = "sort", required = false, defaultValue = "byDate") String sort,
+            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+            @RequestParam(value = "orderBy", required = false, defaultValue = "desc") String orderBy) {
+        List<PhotoDto> photoList = photoService.getPhotoList(keyword, sort, orderBy);
+        return new ResponseEntity<>(photoList, HttpStatus.OK);
+    }
 }

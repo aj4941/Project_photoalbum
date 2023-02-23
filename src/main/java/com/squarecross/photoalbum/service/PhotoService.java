@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.squarecross.photoalbum.service.Constants.*;
@@ -120,5 +122,27 @@ public class PhotoService {
                     String.format("사진을 ID로 찾을 수 없습니다."));
         }
         return new File(PATH_PREFIX + res.get().getOriginalUrl());
+    }
+
+    public List<PhotoDto> getPhotoList(String keyword, String sort, String orderBy) {
+        List<Photo> photos;
+        if (Objects.equals(sort, "byDate")) {
+            if (Objects.equals(orderBy, "asc")) {
+                photos = photoRepository.findByFileNameContainingOrderByUploadedAtDesc(keyword);
+            } else {
+                photos = photoRepository.findByFileNameContainingOrderByUploadedAtAsc(keyword);
+            }
+        } else if (Objects.equals(sort, "byName")){
+            if (Objects.equals(orderBy, "asc")) {
+                photos = photoRepository.findByFileNameContainingOrderByFileNameAsc(keyword);
+            } else {
+                photos = photoRepository.findByFileNameContainingOrderByFileNameDesc(keyword);
+            }
+        } else {
+            throw new EntityNotFoundException("알 수 없는 정렬 기준입니다.");
+        }
+
+        List<PhotoDto> photoDtos = PhotoMapper.convertToDtoList(photos);
+        return photoDtos;
     }
 }
