@@ -82,4 +82,13 @@ public class PhotoController {
         List<PhotoDto> photoList = photoService.getPhotoList(keyword, sort, orderBy);
         return new ResponseEntity<>(photoList, HttpStatus.OK);
     }
+
+    @PutMapping("/move")
+    public ResponseEntity<List<PhotoDto>> movePhotos(
+            @RequestParam("fromAlbumId") Long fromAlbumId,
+            @RequestParam("toAlbumId") Long toAlbumId,
+            @RequestParam("photoIds") List<Long> photoIds) throws IOException {
+        List<PhotoDto> photoDtos = photoService.movePhotos(fromAlbumId, toAlbumId, photoIds);
+        return new ResponseEntity<>(photoDtos, HttpStatus.OK);
+    }
 }

@@ -13,16 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import javax.persistence.EntityNotFoundException;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -105,6 +106,7 @@ public class PhotoService {
         if (ext == null) {
             throw new IllegalArgumentException("No Extention");
         }
+
         ImageIO.write(thumbImg, ext, thumbFile);
     }
 
@@ -145,4 +147,51 @@ public class PhotoService {
         List<PhotoDto> photoDtos = PhotoMapper.convertToDtoList(photos);
         return photoDtos;
     }
+
+    public List<PhotoDto> movePhotos(
+            Long fromAlbumId, Long toAlbumId, List<Long> photoIds) throws IOException {
+        // 1. photo의 fileName 을 가져오고 같은 이름을 toAlbumId에서 체킹하여 fileName 수정
+        // 2. photo의 original, thumb 주소를 toAlbumId에 맞춰서 저장
+        // 3. photo의 원본을 File들로 저장하고 toAlbumId로 옮기기
+        // 4. fromAlbumId에 있던 원본 파일들 삭제
+        List<Photo> photos = new ArrayList<>();
+        for (Long photoId : photoIds) {
+            Optional<Photo> res = photoRepository.findById(photoId);
+            if (res.isPresent()) {
+                // photo를 얻어내고 초기 주소에 대한 파일을 얻음
+                Photo photo = res.get();
+                File originalFile = new File(PATH_PREFIX + photo.getOriginalUrl());
+                File thumbFile = new File(PATH_PREFIX + photo.getThumbUrl());
+
+                // 파일 이름을 받은 후 겹치는 이름을 피해서 새 이름을 만든 후 photo의 url 변경
+                String fileName = photo.getFileName();
+                fileName = getNextFileName(fileName, toAlbumId);
+                photo.setOriginalUrl("/photos/original/" + toAlbumId + "/" + fileName);
+                photo.setThumbUrl("/photos/thumb/" + toAlbumId + "/" + fileName);
+
+                // 변경된 url에 대한 파일도 받음
+                File originalChangeFile = new File(PATH_PREFIX + photo.getOriginalUrl());
+                File thumbChangeFile = new File(PATH_PREFIX + photo.getThumbUrl());
+
+                // 기존에 있던 사진 내용을 변경 주소로 옮김
+                Files.copy(originalFile.toPath(), originalChangeFile.toPath());
+                Files.copy(thumbFile.toPath(), thumbChangeFile.toPath());
+
+                // 원본 주소에 있는 파일 삭제
+                deleteFiles(String.valueOf(originalFile.toPath()));
+                deleteFiles(String.valueOf(thumbFile.toPath()));
+
+                // 변경된 사진 추가
+                photos.add(photo);
+            } else {
+                throw new EntityNotFoundException("에러");
+            }
+        }
+        return PhotoMapper.convertToDtoList(photos);
+    }
+
+    private void deleteFiles(String url) throws IOException {
+        Files.delete(Path.of(url));
+    }
+
 }

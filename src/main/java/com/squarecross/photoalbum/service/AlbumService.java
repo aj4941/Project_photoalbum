@@ -74,6 +74,7 @@ public class AlbumService {
         FileUtils.cleanDirectory(new File(Constants.PATH_PREFIX + "/photos/original/" + album.getAlbumId()));
         FileUtils.cleanDirectory(new File(Constants.PATH_PREFIX + "/photos/thumb/" + album.getAlbumId()));
     }
+
     public List<AlbumDto> getAlbumList(String keyword, String sort, String orderBy) {
         List<Album> albums;
         if (Objects.equals(sort, "byName")) {
