@@ -199,6 +199,7 @@ public class PhotoService {
                 Photo photo = res.get(); photos.add(photo);
                 deleteFiles(PATH_PREFIX + photo.getOriginalUrl());
                 deleteFiles(PATH_PREFIX + photo.getThumbUrl());
+                photoRepository.deleteById(photoId);
             } else {
                 throw new EntityNotFoundException("에러");
             }
