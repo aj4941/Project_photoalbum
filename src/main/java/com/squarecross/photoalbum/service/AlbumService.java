@@ -38,24 +38,25 @@ public class AlbumService {
         Optional<Album> res = albumRepository.findById(albumId);
         if (res.isPresent()) {
             AlbumDto albumDto = convertToDto(res.get());
-            albumDto.setCount(photoRepository.countByAlbum_AlbumId(albumId));
+            albumDto.setCount(photoRepository.countByAlbum_AlbumId(albumId)); // photo의 album.getAlbumId()가 albumId인 것들의 개수 출력
             return albumDto;
-        }
-        else {
-            throw new EntityNotFoundException
-                    (String.format("앨범 아이디 %d로 조회되지 않았습니다.", albumId));
+        } else {
+            throw new EntityNotFoundException(String.format("앨범 아이디 %d로 조회 실패", albumId));
         }
     }
+
     public Album getAlbumByName(String albumName) {
         Album res = albumRepository.findByAlbumName(albumName);
         return res;
     }
+
     public AlbumDto createAlbum(AlbumDto albumDto) throws IOException {
         Album album = AlbumMapper.convertToModel(albumDto);
         albumRepository.save(album);
         createAlbumDirectories(album);
         return convertToDto(album);
     }
+
     void createAlbumDirectories(Album album) throws IOException {
         Files.createDirectories(Paths.get(PATH_PREFIX + "/photos/original/" + album.getAlbumId()));
         Files.createDirectories(Paths.get(PATH_PREFIX + "/photos/thumb/" + album.getAlbumId()));
@@ -76,23 +77,8 @@ public class AlbumService {
     }
 
     public List<AlbumDto> getAlbumList(String keyword, String sort, String orderBy) {
-        List<Album> albums;
-        if (Objects.equals(sort, "byName")) {
-            if (Objects.equals(orderBy, "asc"))
-                albums = albumRepository.findByAlbumNameContainingOrderByAlbumNameAsc(keyword);
-            else
-                albums = albumRepository.findByAlbumNameContainingOrderByAlbumNameDesc(keyword);
-        }
-        else if (Objects.equals(sort, "byDate")) {
-            if (Objects.equals(orderBy, "asc"))
-                albums = albumRepository.findByAlbumNameContainingOrderByCreatedAtAsc(keyword);
-            else
-                albums = albumRepository.findByAlbumNameContainingOrderByCreatedAtDesc(keyword);
-        }
-        else {
-            throw new IllegalArgumentException("알 수 없는 정렬 기준입니다.");
-        }
 
+        List<Album> albums = albumRepository.search(keyword, sort, orderBy);
         List<AlbumDto> albumDtos = AlbumMapper.convertToDtoList(albums);
 
         for (AlbumDto albumDto : albumDtos) {

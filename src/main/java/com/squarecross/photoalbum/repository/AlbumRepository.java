@@ -7,7 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AlbumRepository extends JpaRepository<Album, Long> {
+public interface AlbumRepository
+        extends JpaRepository<Album, Long>, AlbumRepositoryCustom {
+
     Album findByAlbumName(String name);
     List<Album> findByAlbumNameContainingOrderByAlbumNameAsc(String keyword);
     List<Album> findByAlbumNameContainingOrderByAlbumNameDesc(String keyword);

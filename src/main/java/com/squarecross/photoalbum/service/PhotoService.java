@@ -56,7 +56,7 @@ public class PhotoService {
         if (res.isEmpty()) {
             throw new EntityNotFoundException("앨범이 존재하지 않습니다.");
         }
-
+        Album album = res.get();
         String fileName = file.getOriginalFilename(); // 파일 이름을 얻는 메서드
         int fileSize = (int) file.getSize(); // 파일 크기를 얻는 메서드
 
@@ -67,7 +67,8 @@ public class PhotoService {
         photo.setOriginalUrl("/photos/original/" + albumId + "/" + fileName);
         photo.setThumbUrl("/photos/thumb/" + albumId + "/" + fileName);
         photo.setFileName(fileName); photo.setFileSize(fileSize);
-        photo.setAlbum(res.get());
+        album.addPhoto(photo);
+
         Photo createdPhoto = photoRepository.save(photo);
         return PhotoMapper.convertToDto(createdPhoto);
     }

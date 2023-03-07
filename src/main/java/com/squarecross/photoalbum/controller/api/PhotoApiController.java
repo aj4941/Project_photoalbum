@@ -1,31 +1,24 @@
-package com.squarecross.photoalbum.controller;
+package com.squarecross.photoalbum.controller.api;
 
-import com.squarecross.photoalbum.domain.Photo;
 import com.squarecross.photoalbum.dto.PhotoDto;
-import com.squarecross.photoalbum.repository.PhotoRepository;
 import com.squarecross.photoalbum.service.PhotoService;
 import org.apache.tika.io.IOUtils;
-import org.apache.xmlbeans.impl.piccolo.io.IllegalCharException;
-import org.hibernate.engine.jdbc.StreamUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @RestController
 @RequestMapping("/albums/{albumId}/photos")
-public class PhotoController {
+public class PhotoApiController {
 
     @Autowired
     private PhotoService photoService;

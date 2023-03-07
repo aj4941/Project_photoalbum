@@ -1,10 +1,8 @@
-package com.squarecross.photoalbum.controller;
+package com.squarecross.photoalbum.controller.api;
 
-import com.squarecross.photoalbum.domain.Album;
 import com.squarecross.photoalbum.dto.AlbumDto;
 import com.squarecross.photoalbum.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 @RestController
 @RequestMapping("/albums")
-public class AlbumController {
+public class AlbumApiController {
 
     @Autowired
     AlbumService albumService;

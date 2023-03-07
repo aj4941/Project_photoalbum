@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class AlbumMapper {
+
     public static AlbumDto convertToDto(Album album) {
         AlbumDto albumDto = new AlbumDto();
         albumDto.setAlbumName(album.getAlbumName());
@@ -22,6 +23,7 @@ public class AlbumMapper {
         album.setCreatedAt(albumDto.getCreatedAt());
         return album;
     }
+
     public static List<AlbumDto> convertToDtoList(List<Album> albums) {
         return albums.stream().map(AlbumMapper::convertToDto)
                 .collect(Collectors.toList());
