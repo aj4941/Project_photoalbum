@@ -51,8 +51,10 @@ class AlbumServiceTest {
         AlbumDto resAlbum = albumService.getAlbum(savedAlbum.getAlbumId());
         assertEquals("테스트", resAlbum.getAlbumName());
     }
+
     @Test
     void getAlbumByName() {
+
         // given
         Album hasAlbum = new Album();
         hasAlbum.setAlbumName("테스트");
@@ -66,23 +68,24 @@ class AlbumServiceTest {
         assertThat(findAlbum).isEqualTo(savedAlbum);
         assertEquals(findNotAlbum, null);
     }
+
     @Test
     void testPhotoCount() {
+
         Album album = new Album();
         album.setAlbumName("테스트");
-        Album savedAlbum = albumRepository.save(album);
 
         Photo photo1 = new Photo();
-        photo1.setFileName("사진1"); photo1.setAlbum(savedAlbum);
-        photoRepository.save(photo1);
+        photo1.setFileName("사진1");
 
         Photo photo2 = new Photo();
-        photo2.setFileName("사진2"); photo2.setAlbum(savedAlbum);
-        photoRepository.save(photo2);
+        photo2.setFileName("사진2");
 
         Photo photo3 = new Photo();
-        photo3.setFileName("사진3"); photo3.setAlbum(savedAlbum);
-        photoRepository.save(photo3);
+        photo3.setFileName("사진3");
+
+        album.addPhoto(photo1); album.addPhoto(photo2); album.addPhoto(photo3);
+        Album savedAlbum = albumRepository.save(album); // cascade.ALL 이므로 photo도 저장됨
 
         AlbumDto albumDto = albumService.getAlbum(savedAlbum.getAlbumId());
         assertThat(albumDto.getCount()).isEqualTo(3);
@@ -90,30 +93,18 @@ class AlbumServiceTest {
 
     @Test
     void testAlbumDelete() throws IOException {
+
         // given
-        Album album = new Album();
-        album.setAlbumName("테스트");
-        Photo photo = new Photo();
-        photo.setFileName("테스트 사진");
-        album.addPhoto(photo);
-
-        Album savedAlbum = albumRepository.save(album);
-        Long albumId = savedAlbum.getAlbumId();
-
-        Photo savedPhoto = photoRepository.findByAlbum_AlbumId(savedAlbum.getAlbumId());
-        Long photoId = savedPhoto.getPhotoId();
-
-        albumService.createAlbumDirectories(savedAlbum);
+        long albumId = 2;
 
         // when
-        albumService.deleteAlbum(savedAlbum.getAlbumId());
+        albumService.deleteAlbum(albumId);
+        Path path = Paths.get(PATH_PREFIX + "/photos/original/" + albumId);
+        Path thumbPath = Paths.get(PATH_PREFIX + "/photos/thumb/" + albumId);
 
         // then
-        Optional<Album> findAlbum = albumRepository.findById(albumId);
-        assertEquals(Optional.empty(), findAlbum);
-
-        Optional<Photo> findPhoto = photoRepository.findById(photoId);
-        assertEquals(Optional.empty(), findPhoto);
+        assertTrue(Files.notExists(path));
+        assertTrue(Files.notExists(thumbPath));
     }
 
     @Test
@@ -125,11 +116,11 @@ class AlbumServiceTest {
         // when
         AlbumDto createAlbumDto = albumService.createAlbum(albumDto);
         Path path = Paths.get(PATH_PREFIX + "/photos/original/" + createAlbumDto.getAlbumId());
+        Path thumbPath = Paths.get(PATH_PREFIX + "/photos/thumb/" + createAlbumDto.getAlbumId());
 
         // then
         assertTrue(Files.exists(path));
-
-        albumService.deleteAlbumDirectories(createAlbumDto);
+        assertTrue(Files.exists(thumbPath));
     }
 
     @Test
@@ -145,14 +136,14 @@ class AlbumServiceTest {
         albumRepository.save(album2);
 
         // then
-        List<Album> resDate = albumRepository.findByAlbumNameContainingOrderByCreatedAtDesc("aaa");
-        assertEquals("aaab", resDate.get(0).getAlbumName());
-        assertEquals("aaaa", resDate.get(1).getAlbumName());
+        List<Album> resDate = albumRepository.search("aaa", "byDate", "asc");
+        assertEquals("aaaa", resDate.get(0).getAlbumName());
+        assertEquals("aaab", resDate.get(1).getAlbumName());
         assertEquals(2, resDate.size());
 
-        List<Album> resName = albumRepository.findByAlbumNameContainingOrderByAlbumNameAsc("aaa");
-        assertEquals("aaaa", resName.get(0).getAlbumName());
-        assertEquals("aaab", resName.get(1).getAlbumName());
+        List<Album> resName = albumRepository.search("aaa", "byName", "desc");
+        assertEquals("aaab", resName.get(0).getAlbumName());
+        assertEquals("aaaa", resName.get(1).getAlbumName());
         assertEquals(2, resName.size());
     }
 
@@ -168,10 +159,9 @@ class AlbumServiceTest {
         updateDto.setAlbumName("변경후");
 
         // when
-        albumService.changeName(albumId, updateDto);
+        AlbumDto findAlbumDto = albumService.changeName(albumId, updateDto);
 
         // then
-        AlbumDto findAlbumDto = albumService.getAlbum(albumId);
         assertEquals("변경후", findAlbumDto.getAlbumName());
     }
 }

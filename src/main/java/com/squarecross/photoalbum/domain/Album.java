@@ -20,7 +20,7 @@ public class Album {
 
     private Date createdAt;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "album", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Photo> photos = new ArrayList<>();
 
     public Album() { }

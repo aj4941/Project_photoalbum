@@ -52,28 +52,14 @@ public class AlbumService {
 
     public AlbumDto createAlbum(AlbumDto albumDto) throws IOException {
         Album album = AlbumMapper.convertToModel(albumDto);
-        albumRepository.save(album);
-        createAlbumDirectories(album);
+        Album savedAlbum = albumRepository.save(album);
+        createAlbumDirectories(album.getAlbumId());
         return convertToDto(album);
     }
 
-    void createAlbumDirectories(Album album) throws IOException {
-        Files.createDirectories(Paths.get(PATH_PREFIX + "/photos/original/" + album.getAlbumId()));
-        Files.createDirectories(Paths.get(PATH_PREFIX + "/photos/thumb/" + album.getAlbumId()));
-    }
-
-    // 같은 클래스 내에서 사용되지 못하므로 private로 사용하면 안된다.
-    public void deleteAlbumDirectories(AlbumDto albumDto) throws IOException {
-        Files.delete(Path.of(PATH_PREFIX + "/photos/original/" + albumDto.getAlbumId()));
-        Files.delete(Path.of(PATH_PREFIX + "/photos/thumb/" + albumDto.getAlbumId()));
-    }
-    public void deleteAlbumDirectories(Album album) throws IOException {
-        Files.delete(Path.of(PATH_PREFIX + "/photos/original/" + album.getAlbumId()));
-        Files.delete(Path.of(PATH_PREFIX + "/photos/thumb/" + album.getAlbumId()));
-    }
-    public void deleteAlbumFiles(Album album) throws IOException {
-        FileUtils.cleanDirectory(new File(Constants.PATH_PREFIX + "/photos/original/" + album.getAlbumId()));
-        FileUtils.cleanDirectory(new File(Constants.PATH_PREFIX + "/photos/thumb/" + album.getAlbumId()));
+    private void createAlbumDirectories(Long albumId) throws IOException {
+        Files.createDirectories(Paths.get(PATH_PREFIX + "/photos/original/" + albumId));
+        Files.createDirectories(Paths.get(PATH_PREFIX + "/photos/thumb/" + albumId));
     }
 
     public List<AlbumDto> getAlbumList(String keyword, String sort, String orderBy) {
@@ -82,13 +68,13 @@ public class AlbumService {
         List<AlbumDto> albumDtos = AlbumMapper.convertToDtoList(albums);
 
         for (AlbumDto albumDto : albumDtos) {
-            List<Photo> top4 =
-                    photoRepository.findTop4ByAlbum_AlbumIdOrderByUploadedAtDesc(albumDto.getAlbumId());
+            List<Photo> top4 = photoRepository.searchTop4(albumDto.getAlbumId());
             albumDto.setThumbUrls(top4.stream()
                                     .map(Photo::getThumbUrl)
                                     .map(c -> PATH_PREFIX + c)
                                     .collect(Collectors.toList()));
         }
+
         return albumDtos;
     }
 
@@ -105,14 +91,23 @@ public class AlbumService {
     public void deleteAlbum(Long albumId) throws EntityNotFoundException, IOException {
         Optional<Album> res = albumRepository.findById(albumId);
         if (res.isPresent()) {
-            Album album = res.get();
-            deleteAlbumFiles(album);
-            deleteAlbumDirectories(album);
+            deleteAlbumFiles(albumId); // 디렉토리 안을 초기화
+            deleteAlbumDirectories(albumId); // 디렉토리 제거
             albumRepository.deleteById(albumId);
         }
         else {
             throw new EntityNotFoundException(
                     String.format("Album Id %d가 존재하지 않습니다.", albumId));
         }
+    }
+
+    private void deleteAlbumFiles(Long albumId) throws IOException {
+        FileUtils.cleanDirectory(new File(PATH_PREFIX + "/photos/original/" + albumId));
+        FileUtils.cleanDirectory(new File(PATH_PREFIX + "/photos/thumb/" + albumId));
+    }
+
+    private void deleteAlbumDirectories(Long albumId) throws IOException {
+        Files.delete(Path.of(PATH_PREFIX + "/photos/original/" + albumId));
+        Files.delete(Path.of(PATH_PREFIX + "/photos/thumb/" + albumId));
     }
 }

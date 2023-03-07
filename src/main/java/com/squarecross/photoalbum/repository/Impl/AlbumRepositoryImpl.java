@@ -1,11 +1,9 @@
-package com.squarecross.photoalbum.repository;
+package com.squarecross.photoalbum.repository.Impl;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.squarecross.photoalbum.domain.Album;
 
 import javax.persistence.EntityManager;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
