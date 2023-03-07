@@ -36,9 +36,6 @@ public class PhotoService {
     @Autowired
     private AlbumRepository albumRepository;
 
-    private final String original_path = PATH_PREFIX + "/photos/original";
-    private final String thumb_path = PATH_PREFIX + "/photos/thumb";
-
     public PhotoDto getPhoto(Long photoId) {
         Optional<Photo> res = photoRepository.findById(photoId);
         if (res.isPresent()) {
@@ -74,32 +71,28 @@ public class PhotoService {
     }
 
     private String getNextFileName(String fileName, Long albumId) {
-        String fileNameNoExt = StringUtils.stripFilenameExtension(fileName); // 파일명에서 확장자 제거
-        String ext = StringUtils.getFilenameExtension(fileName); // 파일명에서 확장자만 얻어내기
+        String fileNameNoExt = StringUtils.stripFilenameExtension(fileName);
+        String ext = StringUtils.getFilenameExtension(fileName);
 
         Optional<Photo> res = photoRepository.findByFileNameAndAlbum_AlbumId(fileName, albumId);
 
         int count = 2;
         while (res.isPresent()) {
-            fileName = String.format("%s (%d).%s", fileNameNoExt, count, ext);
+            fileName = String.format("%s (%d).%s", fileNameNoExt, count++, ext);
             res = photoRepository.findByFileNameAndAlbum_AlbumId(fileName, albumId);
-            count++;
         }
 
         return fileName;
     }
 
     private void saveFile(MultipartFile file, Long albumId, String fileName) throws IOException {
+
         String filePath = albumId + "/" + fileName;
-        // 원본 이미지를 original 사진 경로에 저장
-        Files.copy(file.getInputStream(), Paths.get(original_path + "/" + filePath));
+        Files.copy(file.getInputStream(), Paths.get(PATH_PREFIX + "/photos/original/" + filePath));
 
-        // 이미지 사이즈를 THUMB_SIZE * THUMB_SIZE로 수정
-        BufferedImage thumbImg = Scalr.resize(ImageIO.read(file.getInputStream()),
-                THUMB_SIZE, THUMB_SIZE);
+        BufferedImage thumbImg = Scalr.resize(ImageIO.read(file.getInputStream()), THUMB_SIZE, THUMB_SIZE);
 
-        // Resize된 썸네일 사진을 넣기 위해 파일을 만들고 썸네일 이미지 저장
-        File thumbFile = new File(thumb_path + "/" + filePath);
+        File thumbFile = new File(PATH_PREFIX + "/photos/thumb/" + filePath);
         String ext = StringUtils.getFilenameExtension(fileName);
         if (ext == null) {
             throw new IllegalArgumentException("No Extention");
@@ -125,23 +118,7 @@ public class PhotoService {
     }
 
     public List<PhotoDto> getPhotoList(String keyword, String sort, String orderBy) {
-        List<Photo> photos;
-        if (Objects.equals(sort, "byDate")) {
-            if (Objects.equals(orderBy, "asc")) {
-                photos = photoRepository.findByFileNameContainingOrderByUploadedAtDesc(keyword);
-            } else {
-                photos = photoRepository.findByFileNameContainingOrderByUploadedAtAsc(keyword);
-            }
-        } else if (Objects.equals(sort, "byName")){
-            if (Objects.equals(orderBy, "asc")) {
-                photos = photoRepository.findByFileNameContainingOrderByFileNameAsc(keyword);
-            } else {
-                photos = photoRepository.findByFileNameContainingOrderByFileNameDesc(keyword);
-            }
-        } else {
-            throw new EntityNotFoundException("알 수 없는 정렬 기준입니다.");
-        }
-
+        List<Photo> photos = photoRepository.search(keyword, sort, orderBy);
         List<PhotoDto> photoDtos = PhotoMapper.convertToDtoList(photos);
         return photoDtos;
     }
@@ -152,6 +129,7 @@ public class PhotoService {
         // 2. photo의 original, thumb 주소를 toAlbumId에 맞춰서 저장
         // 3. photo의 원본을 File들로 저장하고 toAlbumId로 옮기기
         // 4. fromAlbumId에 있던 원본 파일들 삭제
+
         List<Photo> photos = new ArrayList<>();
         for (Long photoId : photoIds) {
             Optional<Photo> res = photoRepository.findById(photoId);
