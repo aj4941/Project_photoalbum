@@ -10,6 +10,7 @@ import org.apache.tika.Tika;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +29,7 @@ import java.util.Optional;
 import static com.squarecross.photoalbum.service.Constants.*;
 
 @Service
+@Transactional
 public class PhotoService {
 
     @Autowired
@@ -78,7 +80,7 @@ public class PhotoService {
 
         int count = 2;
         while (res.isPresent()) {
-            fileName = String.format("%s (%d).%s", fileNameNoExt, count++, ext);
+            fileName = String.format("%s(%d).%s", fileNameNoExt, count++, ext);
             res = photoRepository.findByFileNameAndAlbum_AlbumId(fileName, albumId);
         }
 
@@ -125,17 +127,32 @@ public class PhotoService {
 
     public List<PhotoDto> movePhotos(
             Long fromAlbumId, Long toAlbumId, List<Long> photoIds) throws IOException {
-        // 1. photo의 fileName 을 가져오고 같은 이름을 toAlbumId에서 체킹하여 fileName 수정
-        // 2. photo의 original, thumb 주소를 toAlbumId에 맞춰서 저장
-        // 3. photo의 원본을 File들로 저장하고 toAlbumId로 옮기기
-        // 4. fromAlbumId에 있던 원본 파일들 삭제
+
+        Album fromAlbum, toAlbum;
+        Optional<Album> from = albumRepository.findById(fromAlbumId);
+        Optional<Album> to = albumRepository.findById(toAlbumId);
+
+        if (from.isPresent() && to.isPresent()) {
+            fromAlbum = from.get();
+            toAlbum = to.get();
+        } else {
+            throw new EntityNotFoundException("앨범이 존재하지 않습니다.");
+        }
 
         List<Photo> photos = new ArrayList<>();
+
         for (Long photoId : photoIds) {
+
             Optional<Photo> res = photoRepository.findById(photoId);
+
             if (res.isPresent()) {
                 // photo를 얻어내고 초기 주소에 대한 파일을 얻음
                 Photo photo = res.get();
+
+                if (photo.getAlbum().getAlbumId() != fromAlbumId) {
+                    throw new EntityNotFoundException("해당 앨범에 존재하지 않는 사진이므로 옮길 수 없습니다.");
+                }
+
                 File originalFile = new File(PATH_PREFIX + photo.getOriginalUrl());
                 File thumbFile = new File(PATH_PREFIX + photo.getThumbUrl());
 
@@ -157,12 +174,17 @@ public class PhotoService {
                 deleteFiles(String.valueOf(originalFile.toPath()));
                 deleteFiles(String.valueOf(thumbFile.toPath()));
 
+                // from -> to로 연관관계 수정
+                // fromAlbum.deletePhoto(photo); : 연관관계의 주인이 photo이므로 FK만 변경해주면 OK
+                toAlbum.addPhoto(photo);
+
                 // 변경된 사진 추가
                 photos.add(photo);
             } else {
                 throw new EntityNotFoundException("에러");
             }
         }
+
         return PhotoMapper.convertToDtoList(photos);
     }
 

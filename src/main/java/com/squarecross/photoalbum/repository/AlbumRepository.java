@@ -13,4 +13,5 @@ public interface AlbumRepository
 
     Album findByAlbumName(String name);
     void deleteById(Long id);
+    int countByAlbumId(Long id);
 }

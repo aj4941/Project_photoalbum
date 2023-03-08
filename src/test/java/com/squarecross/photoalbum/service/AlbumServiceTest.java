@@ -93,7 +93,6 @@ class AlbumServiceTest {
 
     @Test
     void testAlbumDelete() throws IOException {
-
         // given
         long albumId = 2;
 
@@ -105,6 +104,8 @@ class AlbumServiceTest {
         // then
         assertTrue(Files.notExists(path));
         assertTrue(Files.notExists(thumbPath));
+        assertThat(albumRepository.countByAlbumId(albumId)).isEqualTo(0);
+        assertThat(photoRepository.countByAlbum_AlbumId(albumId)).isEqualTo(0);
     }
 
     @Test
@@ -149,7 +150,6 @@ class AlbumServiceTest {
 
     @Test
     void testChangeAlbumName() throws IOException {
-
         // given
         AlbumDto albumDto = new AlbumDto();
         albumDto.setAlbumName("변경전");
@@ -159,9 +159,11 @@ class AlbumServiceTest {
         updateDto.setAlbumName("변경후");
 
         // when
-        AlbumDto findAlbumDto = albumService.changeName(albumId, updateDto);
+        albumService.changeName(albumId, updateDto);
 
         // then
-        assertEquals("변경후", findAlbumDto.getAlbumName());
+        Optional<Album> res = albumRepository.findById(albumId);
+        Album findAlbum = res.get();
+        assertEquals("변경후", findAlbum.getAlbumName());
     }
 }

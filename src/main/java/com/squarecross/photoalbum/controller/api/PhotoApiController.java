@@ -29,7 +29,6 @@ public class PhotoApiController {
         return new ResponseEntity<>(photoDto, HttpStatus.OK);
     }
 
-    // PhotoController
     @PostMapping
     public ResponseEntity<List<PhotoDto>> uploadPhotos(
             @PathVariable("albumId") Long albumId,

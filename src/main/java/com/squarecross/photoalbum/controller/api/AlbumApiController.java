@@ -22,6 +22,7 @@ public class AlbumApiController {
         AlbumDto album = albumService.getAlbum(albumId);
         return new ResponseEntity<>(album, HttpStatus.OK);
     }
+
     @GetMapping("/query")
     public ResponseEntity<AlbumDto> getAlbumByQuery(@RequestParam long albumId) {
         AlbumDto album = albumService.getAlbum(albumId);
@@ -29,8 +30,8 @@ public class AlbumApiController {
     }
 
     @PostMapping("/json_body")
-    public ResponseEntity<AlbumDto> getAlbumByJson(@RequestBody Map<String, Long> albumIdMap) {
-        AlbumDto album = albumService.getAlbum(albumIdMap.get("albumId"));
+    public ResponseEntity<AlbumDto> getAlbumByJson(@RequestBody AlbumDto albumDto) {
+        AlbumDto album = albumService.getAlbum(albumDto.getAlbumId());
         return new ResponseEntity<>(album, HttpStatus.OK);
     }
 
