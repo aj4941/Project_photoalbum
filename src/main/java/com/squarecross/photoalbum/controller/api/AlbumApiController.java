@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 @RestController
-@RequestMapping("/albums")
+@RequestMapping("/api/albums")
 public class AlbumApiController {
 
     @Autowired

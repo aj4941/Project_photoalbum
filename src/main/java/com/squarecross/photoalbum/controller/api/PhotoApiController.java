@@ -17,7 +17,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @RestController
-@RequestMapping("/albums/{albumId}/photos")
+@RequestMapping("/api/albums/{albumId}/photos")
 public class PhotoApiController {
 
     @Autowired
