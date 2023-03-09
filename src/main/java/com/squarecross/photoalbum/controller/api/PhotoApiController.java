@@ -36,6 +36,7 @@ public class PhotoApiController {
         // photos 입력 필드로 업로드된 파일이 files 배열 객체 안에 저장
 
         List<PhotoDto> photos = new ArrayList<>();
+
         for (MultipartFile file : files) {
             PhotoDto photoDto = photoService.savePhoto(file, albumId);
             photos.add(photoDto);
@@ -70,8 +71,8 @@ public class PhotoApiController {
 
     @GetMapping
     public ResponseEntity<List<PhotoDto>> getPhotoList(
-            @RequestParam(value = "sort", required = false, defaultValue = "byDate") String sort,
             @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+            @RequestParam(value = "sort", required = false, defaultValue = "byDate") String sort,
             @RequestParam(value = "orderBy", required = false, defaultValue = "desc") String orderBy) {
         List<PhotoDto> photoList = photoService.getPhotoList(keyword, sort, orderBy);
         return new ResponseEntity<>(photoList, HttpStatus.OK);

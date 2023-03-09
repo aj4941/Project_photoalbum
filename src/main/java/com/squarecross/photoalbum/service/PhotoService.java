@@ -127,7 +127,6 @@ public class PhotoService {
 
     public List<PhotoDto> movePhotos(
             Long fromAlbumId, Long toAlbumId, List<Long> photoIds) throws IOException {
-
         Album fromAlbum, toAlbum;
         Optional<Album> from = albumRepository.findById(fromAlbumId);
         Optional<Album> to = albumRepository.findById(toAlbumId);
