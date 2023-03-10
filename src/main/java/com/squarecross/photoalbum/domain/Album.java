@@ -24,8 +24,8 @@ public class Album {
     private List<Photo> photos = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "user_id")
+    private User member;
 
     public Album() { }
 
