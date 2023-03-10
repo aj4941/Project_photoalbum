@@ -23,6 +23,6 @@ public class Member {
     @NotEmpty
     private String password;
 
-    @OneToMany(mappedBy = "album_id", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Album> albums = new ArrayList<>();
 }
