@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+import java.util.Optional;
+
 @Service
 @Transactional
 @Slf4j
@@ -17,11 +20,22 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public void save(UserDto memberDto) {
-        User member = UserMapper.convertToModel(memberDto);
-        System.out.println("member_id = " + member.getLoginId());
-        System.out.println("member_password = " + member.getPassword());
-        userRepository.save(member);
-        log.info("저장되었습니다.");
+    public void save(UserDto userDto) {
+        User user = UserMapper.convertToModel(userDto);
+        userRepository.save(user);
+    }
+
+    public boolean findLoginId(UserDto userDto) {
+        Optional<User> res = userRepository.findByLoginId(userDto.getLoginId());
+        return res.isPresent() ? true : false;
+    }
+
+    public boolean findLogin(UserDto userDto) {
+        Optional<User> res = userRepository.findByLoginId(userDto.getLoginId());
+        if (res.isPresent()) {
+            User user = res.get();
+            return Objects.equals(user.getPassword(), userDto.getPassword());
+        }
+        return false;
     }
 }

@@ -25,7 +25,7 @@ public class Album {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User member;
+    private User user;
 
     public Album() { }
 

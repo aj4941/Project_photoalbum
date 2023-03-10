@@ -26,6 +26,6 @@ public class User {
 
     public User() { }
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Album> albums = new ArrayList<>();
 }
