@@ -21,8 +21,8 @@ public class HomeController {
 
     @GetMapping("/")
     public String homeLogin(
-            @SessionAttribute(name = "user", required = false) UserDto userDto,
-            Model model) {
+            @SessionAttribute(name = "user", required = false) UserDto userDto, Model model) {
+
         if (userDto == null) {
             return "home";
         }

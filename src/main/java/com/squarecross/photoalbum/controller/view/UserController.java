@@ -42,7 +42,7 @@ public class UserController {
         }
 
         if (userService.findLoginId(userDto)) {
-            // 이름이 같은 회원이 존재합니다 출력 필요
+            result.rejectValue("loginId", "Duplicated"); // 이름 중복
             return "users/addForm";
         }
 
@@ -59,24 +59,20 @@ public class UserController {
     public String login(@Valid @ModelAttribute UserDto userDto,
                         BindingResult result,
                         HttpServletRequest request) {
-
         if (result.hasErrors()) {
             return "users/loginForm";
         }
 
         if (!userService.findLoginId(userDto)) {
-            // 존재하지 않는 아이디입니다 출력 필요
+            result.rejectValue("loginId", "NotFind"); // 아이디가 존재하지 않는 오류
             return "users/loginForm";
         }
 
-        Optional<User> res = userService.findLogin(userDto);
-
-        if (res.isEmpty()) {
-            // 비밀번호가 틀렸습니다 출력 필요
+        if (!userService.findLogin(userDto)) {
+            result.rejectValue("password", "NotFind"); // 비밀번호가 틀리는 오류
             return "users/loginForm";
         }
 
-        User user = res.get();
         // request를 통해 세션 정보가 있으면 getSession으로 HttpSession이 나왔을 것임
         // 없더라면 새로운 세션을 생성하여 등록
         HttpSession session = request.getSession();
