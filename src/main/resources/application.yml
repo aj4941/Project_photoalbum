@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/photo_album
+    username: root
+    password: chlwjd1752
+  jpa:
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+    thymeleaf:
+      cache: false
+  servlet:
+    session:
+      timeout: 1800
+      tracking-modes: cookie
+    multipart:
+      max-file-size: 10000KB
+      max-request-size: 10000KB
+  messages:
+    basename: messages,errors

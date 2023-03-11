@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.CookieGenerator;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Optional;
 
@@ -38,10 +40,12 @@ public class UserController {
         if (result.hasErrors()) {
             return "users/addForm";
         }
+
         if (userService.findLoginId(userDto)) {
             // 이름이 같은 회원이 존재합니다 출력 필요
             return "users/addForm";
         }
+
         userService.save(userDto);
         return "redirect:/";
     }
@@ -52,8 +56,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@Valid @ModelAttribute UserDto userDto, BindingResult result,
-                        HttpServletResponse response) {
+    public String login(@Valid @ModelAttribute UserDto userDto,
+                        BindingResult result,
+                        HttpServletRequest request) {
 
         if (result.hasErrors()) {
             return "users/loginForm";
@@ -72,19 +77,19 @@ public class UserController {
         }
 
         User user = res.get();
-        // cookie name : userId, value : userId_value(string type 필수)
-        CookieGenerator cg = new CookieGenerator();
-        cg.setCookieName("userId");
-        cg.addCookie(response, String.valueOf(user.getUserId()));
+        // request를 통해 세션 정보가 있으면 getSession으로 HttpSession이 나왔을 것임
+        // 없더라면 새로운 세션을 생성하여 등록
+        HttpSession session = request.getSession();
+        session.setAttribute("user", userDto);
         return "redirect:/";
     }
 
     @PostMapping("/logout")
-    public String logout(HttpServletResponse response) {
-        CookieGenerator cg = new CookieGenerator();
-        cg.setCookieName("userId");
-        cg.setCookieMaxAge(0);
-        cg.addCookie(response, null);
+    public String logout(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        if (session != null) {
+            session.invalidate();
+        }
         return "redirect:/";
     }
 }
