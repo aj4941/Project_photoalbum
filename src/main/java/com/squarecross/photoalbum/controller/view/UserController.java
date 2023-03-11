@@ -1,5 +1,6 @@
 package com.squarecross.photoalbum.controller.view;
 
+import com.squarecross.photoalbum.domain.User;
 import com.squarecross.photoalbum.dto.UserDto;
 import com.squarecross.photoalbum.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +11,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.util.CookieGenerator;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/users")
@@ -29,6 +34,7 @@ public class UserController {
 
     @PostMapping("/add")
     public String save(@Valid @ModelAttribute UserDto userDto, BindingResult result) {
+
         if (result.hasErrors()) {
             return "users/addForm";
         }
@@ -46,21 +52,39 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@Valid @ModelAttribute UserDto userDto, BindingResult result) {
+    public String login(@Valid @ModelAttribute UserDto userDto, BindingResult result,
+                        HttpServletResponse response) {
+
         if (result.hasErrors()) {
             return "users/loginForm";
         }
+
         if (!userService.findLoginId(userDto)) {
             // 존재하지 않는 아이디입니다 출력 필요
             return "users/loginForm";
         }
-        log.info("확인 완료");
-        if (!userService.findLogin(userDto)) {
-            // 비밀번호가 맞지 않습니다 출력 필요
+
+        Optional<User> res = userService.findLogin(userDto);
+
+        if (res.isEmpty()) {
+            // 비밀번호가 틀렸습니다 출력 필요
             return "users/loginForm";
         }
 
+        User user = res.get();
+        // cookie name : userId, value : userId_value(string type 필수)
+        CookieGenerator cg = new CookieGenerator();
+        cg.setCookieName("userId");
+        cg.addCookie(response, String.valueOf(user.getUserId()));
+        return "redirect:/";
+    }
 
+    @PostMapping("/logout")
+    public String logout(HttpServletResponse response) {
+        CookieGenerator cg = new CookieGenerator();
+        cg.setCookieName("userId");
+        cg.setCookieMaxAge(0);
+        cg.addCookie(response, null);
         return "redirect:/";
     }
 }

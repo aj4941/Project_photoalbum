@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -30,12 +29,11 @@ public class UserService {
         return res.isPresent() ? true : false;
     }
 
-    public boolean findLogin(UserDto userDto) {
-        Optional<User> res = userRepository.findByLoginId(userDto.getLoginId());
-        if (res.isPresent()) {
-            User user = res.get();
-            return Objects.equals(user.getPassword(), userDto.getPassword());
-        }
-        return false;
+    public Optional<User> findLogin(UserDto userDto) {
+        return userRepository.findByLoginId(userDto.getLoginId());
+    }
+
+    public Optional<User> findUser(Long userId) {
+        return userRepository.findById(userId);
     }
 }
