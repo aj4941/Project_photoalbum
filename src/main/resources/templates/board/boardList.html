@@ -16,15 +16,15 @@
       <th>#</th>
       <th>제목</th>
       <th>작성일</th>
-      <th>아이디</th>
+      <th>최종 수정일</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="boardDto, iterStat : ${boardDtos}">
       <td th:text="${iterStat.count}"></td>
       <td th:text="${boardDto.title}"></td>
-      <td th:text="${boardDto.createdDate}"></td>
-      <td th:text="${boardDto.author}"></td>
+      <td th:text="${#temporals.format(boardDto.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+      <td th:text="${#temporals.format(boardDto.modifiedDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
     </tr>
     </tbody>
   </table>

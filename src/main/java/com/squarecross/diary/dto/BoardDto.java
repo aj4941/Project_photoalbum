@@ -10,5 +10,6 @@ public class BoardDto {
     private String title;
     private String content;
     private LocalDateTime createdDate;
+    private LocalDateTime modifiedDate;
     private String author;
 }

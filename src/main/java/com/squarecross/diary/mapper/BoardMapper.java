@@ -14,10 +14,10 @@ public class BoardMapper {
             BoardDto boardDto = new BoardDto();
             boardDto.setTitle(board.getTitle());
             boardDto.setCreatedDate(board.getCreatedDate());
+            boardDto.setModifiedDate(board.getModifiedDate());
             boardDto.setAuthor(board.getAuthor());
             boardDtos.add(boardDto);
         }
-
         return boardDtos;
     }
 

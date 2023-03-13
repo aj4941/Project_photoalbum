@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "board", schema = "diary")
 @Getter @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class Board {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

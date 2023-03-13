@@ -36,7 +36,7 @@ public class BoardController {
     }
 
     @PostMapping("/write")
-    public String savePost(BoardDto boardDto, HttpSession session) {
+    public String savePost(@ModelAttribute BoardDto boardDto, HttpSession session) {
         UserDto userDto = (UserDto) session.getAttribute("userDto");
         boardService.saveBoard(boardDto, userDto);
         return "redirect:/board";

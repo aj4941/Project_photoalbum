@@ -8,6 +8,7 @@ import com.squarecross.diary.mapper.BoardMapper;
 import com.squarecross.diary.mapper.UserMapper;
 import com.squarecross.diary.repository.BoardRepository;
 import com.squarecross.diary.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class BoardService {
 
     @Autowired
@@ -29,10 +31,11 @@ public class BoardService {
     }
 
     public void saveBoard(BoardDto boardDto, UserDto userDto) {
-        Board board = BoardMapper.dtoToBoard(boardDto);
         Optional<User> res = userRepository.findByLoginId(userDto.getLoginId());
         User user = res.get();
+        Board board = BoardMapper.dtoToBoard(boardDto);
         user.addBoard(board);
-        boardRepository.save(board);
+        Board savedBoard = boardRepository.save(board);
+        System.out.println("savedBoard_createdDate = " + savedBoard.getCreatedDate());
     }
 }
