@@ -17,6 +17,13 @@ public class AlbumRepositoryImpl implements AlbumRepositoryCustom {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
+    public List<Album> findAlbumList(String loginId) {
+        return queryFactory
+                    .selectFrom(album)
+                    .where(album.user.loginId.eq(loginId))
+                    .fetch();
+    }
+
     public List<Album> search(String keyword, String sort, String orderBy) {
         return queryFactory
                 .selectFrom(album)

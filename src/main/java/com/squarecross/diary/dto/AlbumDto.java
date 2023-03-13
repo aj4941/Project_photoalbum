@@ -12,5 +12,5 @@ public class AlbumDto {
     private String albumName;
     private Date createdAt;
     private int count;
-    private List<String> thumbUrls;
+    private String thumbUrl;
 }

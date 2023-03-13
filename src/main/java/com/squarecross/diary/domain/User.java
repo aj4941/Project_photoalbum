@@ -25,7 +25,7 @@ public class User {
 
     public User() { }
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Board> boards = new ArrayList<>();
 
     public void addBoard(Board board) {

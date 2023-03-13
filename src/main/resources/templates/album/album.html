@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 앨범</title>
+    <!-- 부트스트랩 CSS 파일 -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>나의 앨범</h2>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>앨범 커버</th>
+            <th>앨범 이름</th>
+            <th>앨범 생성일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="albumDto, iterStat : ${albumDtos}">
+            <td th:text="${iterStat.count}"></td>
+            <td>
+                <a th:href="@{/}">
+                    <img th:src="${albumDto.thumbUrl}" alt="Album 1">
+                </a>
+            </td>
+            <td th:text="${albumDto.albumName}"></td>
+            <td th:text="${albumDto.createdAt}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

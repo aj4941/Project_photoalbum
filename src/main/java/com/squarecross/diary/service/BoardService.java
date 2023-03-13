@@ -17,6 +17,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
+@Transactional
 @Service
 @Slf4j
 public class BoardService {
@@ -42,7 +43,6 @@ public class BoardService {
         }
     }
 
-    @Transactional
     public void saveBoard(BoardDto boardDto, UserDto userDto) {
         Optional<User> res = userRepository.findByLoginId(userDto.getLoginId());
         User user = res.get();
@@ -51,7 +51,6 @@ public class BoardService {
         boardRepository.save(board);
     }
 
-    @Transactional
     public void updateBoard(Long boardId, BoardDto boardDto) {
         Optional<Board> res = boardRepository.findById(boardId);
         Board board = res.get();
@@ -59,7 +58,6 @@ public class BoardService {
         board.setContent(boardDto.getContent());
     }
 
-    @Transactional
     public void deleteBoard(Long boardId) {
         boardRepository.deleteById(boardId);
     }
