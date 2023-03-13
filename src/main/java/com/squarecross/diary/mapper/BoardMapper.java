@@ -12,6 +12,8 @@ public class BoardMapper {
         List<BoardDto> boardDtos = new ArrayList<>();
         for (Board board : boards) {
             BoardDto boardDto = new BoardDto();
+            boardDto.setBoardId(board.getBoardId());
+            boardDto.setContent(board.getContent());
             boardDto.setTitle(board.getTitle());
             boardDto.setCreatedDate(board.getCreatedDate());
             boardDto.setModifiedDate(board.getModifiedDate());
@@ -21,8 +23,20 @@ public class BoardMapper {
         return boardDtos;
     }
 
+    public static BoardDto boardToDto(Board board) {
+        BoardDto boardDto = new BoardDto();
+        boardDto.setBoardId(board.getBoardId());
+        boardDto.setContent(board.getContent());
+        boardDto.setTitle(board.getTitle());
+        boardDto.setCreatedDate(board.getCreatedDate());
+        boardDto.setModifiedDate(board.getModifiedDate());
+        boardDto.setAuthor(board.getAuthor());
+        return boardDto;
+    }
+
     public static Board dtoToBoard(BoardDto boardDto) {
         Board board = new Board();
+        board.setContent(boardDto.getContent());
         board.setTitle(boardDto.getTitle());
         board.setContent(boardDto.getContent());
         board.setAuthor(boardDto.getAuthor());

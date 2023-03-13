@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,9 +26,19 @@ public class BoardService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<BoardDto> getBoard(String loginId) {
+    public List<BoardDto> getBoards(String loginId) {
         List<Board> boards = boardRepository.search(loginId);
         return BoardMapper.boardsToDtos(boards);
+    }
+
+    public Board findBoard(Long boardId) {
+        Optional<Board> res = boardRepository.findById(boardId);
+        if (res.isPresent()) {
+            return res.get();
+        }
+        else {
+            throw new EntityNotFoundException("게시글이 존재하지 않습니다.");
+        }
     }
 
     public void saveBoard(BoardDto boardDto, UserDto userDto) {
@@ -35,7 +46,6 @@ public class BoardService {
         User user = res.get();
         Board board = BoardMapper.dtoToBoard(boardDto);
         user.addBoard(board);
-        Board savedBoard = boardRepository.save(board);
-        System.out.println("savedBoard_createdDate = " + savedBoard.getCreatedDate());
+        boardRepository.save(board);
     }
 }

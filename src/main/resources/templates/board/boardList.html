@@ -21,7 +21,7 @@
     </thead>
     <tbody>
     <tr th:each="boardDto, iterStat : ${boardDtos}">
-      <td th:text="${iterStat.count}"></td>
+      <td><a th:href="@{/board/{id}(id=${boardDto.boardId})}" th:text="${iterStat.count}"></a></td>
       <td th:text="${boardDto.title}"></td>
       <td th:text="${#temporals.format(boardDto.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
       <td th:text="${#temporals.format(boardDto.modifiedDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
