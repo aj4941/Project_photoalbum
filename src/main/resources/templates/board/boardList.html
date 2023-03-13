@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>게시글 목록</title>
+  <link rel="stylesheet" href="/css/bootstrap.css">
+</head>
+<body>
+<div class="container">
+  <div class="py-5 text-center">
+    <h2>게시글 목록</h2>
+  </div>
+  <table class="table">
+    <thead>
+    <tr>
+      <th>#</th>
+      <th>제목</th>
+      <th>작성일</th>
+      <th>아이디</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="boardDto, iterStat : ${boardDtos}">
+      <td th:text="${iterStat.count}"></td>
+      <td th:text="${boardDto.title}"></td>
+      <td th:text="${boardDto.createdDate}"></td>
+      <td th:text="${boardDto.author}"></td>
+    </tr>
+    </tbody>
+  </table>
+  <a th:href="@{/board/write}" class="btn btn-primary">글쓰기</a>
+  <a th:href="@{/}" class="btn btn-primary">홈으로</a>
+</div>
+<script src="/css/bootstrap.js"></script>
+</body>
+</html>

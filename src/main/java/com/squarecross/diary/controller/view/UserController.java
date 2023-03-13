@@ -71,7 +71,7 @@ public class UserController {
         // request를 통해 세션 정보가 있으면 getSession으로 HttpSession이 나왔을 것임
         // 없더라면 새로운 세션을 생성하여 등록
         HttpSession session = request.getSession();
-        session.setAttribute("user", userDto);
+        session.setAttribute("userDto", userDto);
         return "redirect:/";
     }
 
