@@ -42,7 +42,6 @@ public class BoardController {
     public String saveBoard(@Valid @ModelAttribute BoardDto boardDto,
                             BindingResult result,
                             HttpSession session) {
-
         if (result.hasErrors()) {
             return "board/write";
         }
@@ -56,6 +55,24 @@ public class BoardController {
     public String readBoard(@PathVariable("id") Long boardId, Model model) {
         Board board = boardService.findBoard(boardId);
         BoardDto boardDto = BoardMapper.boardToDto(board);
+        model.addAttribute("boardDto", boardDto);
+        return "board/read";
+    }
+
+    @GetMapping("/write/{id}")
+    public String updateBoard(@PathVariable("id") Long boardId, Model model) {
+        Board board = boardService.findBoard(boardId);
+        BoardDto boardDto = BoardMapper.boardToDto(board);
+        model.addAttribute("boardDto", boardDto);
+        return "board/write";
+    }
+
+    @PostMapping("/write/{id}")
+    public String updateBoard(@ModelAttribute BoardDto boardDto,
+                              @PathVariable("id") Long boardId,
+                              Model model) {
+        boardService.updateBoard(boardId, boardDto);
+        System.out.println("getId = " + boardDto.getBoardId());
         model.addAttribute("boardDto", boardDto);
         return "board/read";
     }

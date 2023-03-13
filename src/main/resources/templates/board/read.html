@@ -23,9 +23,9 @@
       </textarea>
     </div>
 
-    <a th:href="@{/board/update/1}" class="btn btn-primary">수정</a>
+    <a th:href="@{/board/write/{id}(id=${boardDto.boardId})}" class="btn btn-primary">수정</a>
     <a th:href="@{/board/delete/1}" class="btn btn-primary">삭제</a>
-    <a href="#" onclick="history.back(); return false;" class="btn btn-primary">뒤로가기</a>
+    <a th:href="@{/board}" class="btn btn-primary">목록</a>
   </form>
 </div>
 

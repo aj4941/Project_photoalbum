@@ -2,10 +2,12 @@ package com.squarecross.diary.mapper;
 
 import com.squarecross.diary.domain.Board;
 import com.squarecross.diary.dto.BoardDto;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Transactional
 public class BoardMapper {
 
     public static List<BoardDto> boardsToDtos(List<Board> boards) {

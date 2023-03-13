@@ -11,6 +11,7 @@ import com.squarecross.diary.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -41,11 +42,20 @@ public class BoardService {
         }
     }
 
+    @Transactional
     public void saveBoard(BoardDto boardDto, UserDto userDto) {
         Optional<User> res = userRepository.findByLoginId(userDto.getLoginId());
         User user = res.get();
         Board board = BoardMapper.dtoToBoard(boardDto);
         user.addBoard(board);
         boardRepository.save(board);
+    }
+
+    @Transactional
+    public void updateBoard(Long boardId, BoardDto boardDto) {
+        Optional<Board> res = boardRepository.findById(boardId);
+        Board board = res.get();
+        board.setTitle(boardDto.getTitle());
+        board.setContent(boardDto.getContent());
     }
 }

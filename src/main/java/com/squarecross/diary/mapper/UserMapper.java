@@ -2,6 +2,7 @@ package com.squarecross.diary.mapper;
 
 import com.squarecross.diary.domain.User;
 import com.squarecross.diary.dto.UserDto;
+import org.springframework.transaction.annotation.Transactional;
 
 public class UserMapper {
 
