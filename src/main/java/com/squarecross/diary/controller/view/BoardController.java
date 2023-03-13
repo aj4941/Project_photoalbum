@@ -59,7 +59,7 @@ public class BoardController {
         return "board/read";
     }
 
-    @GetMapping("/write/{id}")
+    @GetMapping("/update/{id}")
     public String updateBoard(@PathVariable("id") Long boardId, Model model) {
         Board board = boardService.findBoard(boardId);
         BoardDto boardDto = BoardMapper.boardToDto(board);
@@ -67,13 +67,18 @@ public class BoardController {
         return "board/write";
     }
 
-    @PostMapping("/write/{id}")
+    @PostMapping("/update/{id}")
     public String updateBoard(@ModelAttribute BoardDto boardDto,
                               @PathVariable("id") Long boardId,
                               Model model) {
         boardService.updateBoard(boardId, boardDto);
-        System.out.println("getId = " + boardDto.getBoardId());
         model.addAttribute("boardDto", boardDto);
         return "board/read";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteBoard(@PathVariable("id") Long boardId) {
+        boardService.deleteBoard(boardId);
+        return "redirect:/board";
     }
 }
