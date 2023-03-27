@@ -70,9 +70,13 @@ public class BoardController {
     }
 
     @PostMapping("/edit/{id}")
-    public String editBoard(@ModelAttribute BoardDto boardDto,
+    public String editBoard(@Valid @ModelAttribute BoardDto boardDto,
+                              BindingResult result,
                               @PathVariable("id") Long boardId,
                               Model model) {
+        if (result.hasErrors()) {
+            return "board/save";
+        }
         boardService.updateBoard(boardId, boardDto);
         model.addAttribute("boardDto", boardDto);
         return "board/board";
@@ -80,7 +84,6 @@ public class BoardController {
 
     @DeleteMapping("/{id}")
     public String deleteBoard(@PathVariable("id") Long boardId) {
-        System.out.println("boardId = " + boardId);
         boardService.deleteBoard(boardId);
         return "redirect:/board";
     }

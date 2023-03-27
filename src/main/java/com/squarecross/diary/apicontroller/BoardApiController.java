@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,5 +32,56 @@ public class BoardApiController {
         return new ResponseEntity<>(boardDtos, HttpStatus.OK);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getBoard(@PathVariable("id") Long boardId) {
+        Board board = boardService.findBoard(boardId);
+        BoardDto boardDto = BoardMapper.boardToDto(board);
+        return new ResponseEntity<>(boardDto, HttpStatus.OK);
+    }
 
+    @GetMapping("/new")
+    public ResponseEntity<String> saveBoard() {
+        return new ResponseEntity<>("saveForm", HttpStatus.OK);
+    }
+
+    @PostMapping("/new")
+    public ResponseEntity<?> saveBoard(@Valid @RequestBody BoardDto boardDto,
+                                       BindingResult result,
+                                       HttpSession session) {
+        if (result.hasErrors()) {
+            return new ResponseEntity<>(result.getAllErrors(), HttpStatus.BAD_REQUEST);
+        }
+
+        UserDto userDto = (UserDto) session.getAttribute("userDto");
+        boardService.saveBoard(boardDto, userDto);
+
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/edit/{id}")
+    public ResponseEntity<String> editBoard(@PathVariable("id") Long boardId,
+                                            Model model) {
+        Board board = boardService.findBoard(boardId);
+        BoardDto boardDto = BoardMapper.boardToDto(board);
+        model.addAttribute("boardDto", boardDto);
+        return new ResponseEntity<>("saveForm", HttpStatus.OK);
+    }
+
+    @PostMapping("/edit/{id}")
+    public ResponseEntity<?> editBoard(@Valid @RequestBody BoardDto boardDto,
+                                              BindingResult result,
+                                              @PathVariable("id") Long boardId) {
+        if (result.hasErrors()) {
+            return new ResponseEntity<>(result.getAllErrors(), HttpStatus.BAD_REQUEST);
+        }
+
+        boardService.updateBoard(boardId, boardDto);
+        return new ResponseEntity<>(boardDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteBoard(@PathVariable("id") Long boardId) {
+        boardService.deleteBoard(boardId);
+        return new ResponseEntity<>("delete", HttpStatus.OK);
+    }
 }
