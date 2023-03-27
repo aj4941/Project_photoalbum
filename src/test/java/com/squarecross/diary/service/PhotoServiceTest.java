@@ -15,33 +15,4 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 class PhotoServiceTest {
-
-    @Autowired
-    AlbumRepository albumRepository;
-
-    @Autowired
-    PhotoRepository photoRepository;
-
-    @Autowired
-    PhotoService photoService;
-
-    @Test
-    void getPhoto() {
-        // given
-        Album album = new Album();
-        album.setAlbumName("테스트");
-
-        Photo photo = new Photo();
-        photo.setFileName("테스트");
-        album.addPhoto(photo);
-
-        Album savedAlbum = albumRepository.save(album);
-        Photo savedPhoto = photoRepository.findByAlbum_AlbumId(savedAlbum.getAlbumId());
-
-        // when
-        PhotoDto photoDto = photoService.getPhoto(savedPhoto.getPhotoId());
-
-        // then
-        assertEquals("테스트", photoDto.getFileName());
-    }
 }

@@ -1,4 +1,4 @@
-package com.squarecross.diary.controller.view;
+package com.squarecross.diary.controller;
 
 import com.squarecross.diary.dto.UserDto;
 import com.squarecross.diary.service.UserService;

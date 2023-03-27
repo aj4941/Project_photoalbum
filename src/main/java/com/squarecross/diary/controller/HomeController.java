@@ -1,4 +1,4 @@
-package com.squarecross.diary.controller.view;
+package com.squarecross.diary.controller;
 
 import com.squarecross.diary.dto.UserDto;
 import com.squarecross.diary.service.UserService;
@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping
 @Slf4j
 public class HomeController {
-
-    @Autowired UserService userService;
 
     @GetMapping("/")
     public String homeLogin(

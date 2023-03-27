@@ -1,4 +1,4 @@
-package com.squarecross.diary.controller.view;
+package com.squarecross.diary.controller;
 
 import com.squarecross.diary.dto.AlbumDto;
 import com.squarecross.diary.dto.UserDto;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpSession;
@@ -21,12 +22,16 @@ public class AlbumController {
     AlbumService albumService;
 
     @GetMapping
-    public String getAlbumList(@ModelAttribute AlbumDto albumDto,
-                            Model model,
+    public String getAlbumList(Model model,
                             HttpSession session) {
         UserDto userDto = (UserDto) session.getAttribute("userDto");
         List<AlbumDto> albumDtos = albumService.getAlbumList(userDto.getLoginId());
         model.addAttribute("albumDtos", albumDtos);
         return "album/album";
     }
+
+//    @GetMapping("/create")
+//    public String createAlbum(@ModelAttribute AlbumDto albumDto) {
+//
+//    }
 }
