@@ -22,11 +22,16 @@
         게시글 내용
       </textarea>
     </div>
-
-    <a th:href="@{/board/update/{id}(id=${boardDto.boardId})}" class="btn btn-primary">수정</a>
-    <a th:href="@{/board/delete/{id}(id=${boardDto.boardId})}" class="btn btn-primary">삭제</a>
-    <a th:href="@{/board}" class="btn btn-primary">목록</a>
   </form>
+  <div class="btn-group" role="group">
+    <a th:href="@{/board/edit/{id}(id=${boardDto.boardId})}" class="btn btn-primary mr-2">수정</a>
+    </form>
+    <form th:action="@{/board/{id}(id=${boardDto.boardId})}" method="post">
+      <input type="hidden" name="_method" value="delete"/>
+      <button type="submit" class="btn btn-primary mr-2">삭제</button>
+    </form>
+    <a th:href="@{/board}" class="btn btn-primary">목록</a>
+  </div>
 </div>
 
 <script src="/js/bootstrap.js"></script>

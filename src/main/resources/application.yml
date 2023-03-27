@@ -29,3 +29,7 @@ spring:
       max-request-size: 10000KB
   messages:
     basename: messages,errors
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true

@@ -8,6 +8,7 @@ import com.squarecross.diary.service.BoardService;
 import com.squarecross.diary.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,17 +34,26 @@ public class BoardController {
         return "board/boardList";
     }
 
-    @GetMapping("/write")
-    public String writeBoard(@ModelAttribute BoardDto boardDto) {
-        return "board/write";
+    @GetMapping("/{id}")
+    public String getBoard(@PathVariable("id") Long boardId, Model model) {
+        Board board = boardService.findBoard(boardId);
+        BoardDto boardDto = BoardMapper.boardToDto(board);
+        model.addAttribute("boardDto", boardDto);
+        return "board/board";
     }
 
-    @PostMapping("/write")
+    @GetMapping("/new")
+    public String saveBoard(@ModelAttribute BoardDto boardDto) {
+        return "board/save";
+    }
+
+    @PostMapping("/new")
     public String saveBoard(@Valid @ModelAttribute BoardDto boardDto,
                             BindingResult result,
                             HttpSession session) {
+
         if (result.hasErrors()) {
-            return "board/write";
+            return "board/save";
         }
 
         UserDto userDto = (UserDto) session.getAttribute("userDto");
@@ -51,33 +61,26 @@ public class BoardController {
         return "redirect:/board";
     }
 
-    @GetMapping("/{id}")
-    public String readBoard(@PathVariable("id") Long boardId, Model model) {
+    @GetMapping("/edit/{id}")
+    public String editBoard(@PathVariable("id") Long boardId, Model model) {
         Board board = boardService.findBoard(boardId);
         BoardDto boardDto = BoardMapper.boardToDto(board);
         model.addAttribute("boardDto", boardDto);
-        return "board/read";
+        return "board/save";
     }
 
-    @GetMapping("/update/{id}")
-    public String updateBoard(@PathVariable("id") Long boardId, Model model) {
-        Board board = boardService.findBoard(boardId);
-        BoardDto boardDto = BoardMapper.boardToDto(board);
-        model.addAttribute("boardDto", boardDto);
-        return "board/write";
-    }
-
-    @PostMapping("/update/{id}")
-    public String updateBoard(@ModelAttribute BoardDto boardDto,
+    @PostMapping("/edit/{id}")
+    public String editBoard(@ModelAttribute BoardDto boardDto,
                               @PathVariable("id") Long boardId,
                               Model model) {
         boardService.updateBoard(boardId, boardDto);
         model.addAttribute("boardDto", boardDto);
-        return "board/read";
+        return "board/board";
     }
 
-    @GetMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteBoard(@PathVariable("id") Long boardId) {
+        System.out.println("boardId = " + boardId);
         boardService.deleteBoard(boardId);
         return "redirect:/board";
     }
