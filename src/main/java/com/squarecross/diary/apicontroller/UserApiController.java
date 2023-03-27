@@ -60,7 +60,7 @@ public class UserApiController {
         }
 
         if (!userService.findLoginId(userDto)) {
-            result.rejectValue("password", "NotFind");
+            result.rejectValue("loginId", "NotFind");
             return new ResponseEntity<>(result.getFieldErrors(),
                     HttpStatus.BAD_REQUEST);
         }
@@ -74,17 +74,17 @@ public class UserApiController {
         HttpSession session = request.getSession();
         session.setAttribute("userDto", userDto);
 
-        return new ResponseEntity<>(userDto, HttpStatus.OK);
+        return new ResponseEntity<>(userDto, HttpStatus.CREATED);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request) {
+    public ResponseEntity<String> logout(HttpServletRequest request) {
         HttpSession session = request.getSession();
 
         if (session != null) {
             session.invalidate();
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("logout", HttpStatus.OK);
     }
 }
