@@ -41,7 +41,7 @@ public class BoardApiController {
 
     @GetMapping("/new")
     public ResponseEntity<String> saveBoard() {
-        return new ResponseEntity<>("saveForm", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/new")
@@ -55,16 +55,14 @@ public class BoardApiController {
         UserDto userDto = (UserDto) session.getAttribute("userDto");
         boardService.saveBoard(boardDto, userDto);
 
-        return new ResponseEntity<>(userDto, HttpStatus.OK);
+        return new ResponseEntity<>(boardDto, HttpStatus.OK);
     }
 
     @GetMapping("/edit/{id}")
-    public ResponseEntity<String> editBoard(@PathVariable("id") Long boardId,
-                                            Model model) {
+    public ResponseEntity<BoardDto> editBoard(@PathVariable("id") Long boardId) {
         Board board = boardService.findBoard(boardId);
         BoardDto boardDto = BoardMapper.boardToDto(board);
-        model.addAttribute("boardDto", boardDto);
-        return new ResponseEntity<>("saveForm", HttpStatus.OK);
+        return new ResponseEntity<>(boardDto, HttpStatus.OK);
     }
 
     @PostMapping("/edit/{id}")
@@ -82,6 +80,6 @@ public class BoardApiController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBoard(@PathVariable("id") Long boardId) {
         boardService.deleteBoard(boardId);
-        return new ResponseEntity<>("delete", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

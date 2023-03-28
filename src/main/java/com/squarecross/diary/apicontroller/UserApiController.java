@@ -22,8 +22,8 @@ public class UserApiController {
     private UserService userService;
 
     @GetMapping("/add")
-    public ResponseEntity<String> addForm() {
-        return new ResponseEntity<>("addForm", HttpStatus.OK);
+    public ResponseEntity addForm() {
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/add")
@@ -46,8 +46,8 @@ public class UserApiController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<String> loginForm() {
-        return ResponseEntity.ok("loginForm");
+    public ResponseEntity loginForm() {
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @PostMapping("/login")
@@ -78,13 +78,13 @@ public class UserApiController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
+    public ResponseEntity logout(HttpServletRequest request) {
         HttpSession session = request.getSession();
 
         if (session != null) {
             session.invalidate();
         }
 
-        return new ResponseEntity<>("logout", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

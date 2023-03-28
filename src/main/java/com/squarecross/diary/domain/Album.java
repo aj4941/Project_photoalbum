@@ -2,13 +2,18 @@ package com.squarecross.diary.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 @Entity
 @Table(name = "album")
 @Getter @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class Album {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,6 +22,7 @@ public class Album {
 
     private String albumName;
 
+    @CreatedDate
     private Date createdAt;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
