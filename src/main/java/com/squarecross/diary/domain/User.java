@@ -35,4 +35,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Album> albums = new ArrayList<>();
+
+    public void addAlbum(Album album) {
+        albums.add(album);
+        album.setUser(this);
+    }
 }

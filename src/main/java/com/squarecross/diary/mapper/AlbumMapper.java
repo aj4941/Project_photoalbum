@@ -12,15 +12,17 @@ public class AlbumMapper {
         AlbumDto albumDto = new AlbumDto();
         albumDto.setAlbumName(album.getAlbumName());
         albumDto.setAlbumId(album.getAlbumId());
-        albumDto.setCreatedAt(album.getCreatedAt());
+        albumDto.setCreatedDate(album.getCreatedDate());
+        albumDto.setModifiedDate(album.getModifiedDate());
         return albumDto;
     }
 
-    public static Album convertToModel(AlbumDto albumDto) {
+    public static Album convertToAlbum(AlbumDto albumDto) {
         Album album = new Album();
         album.setAlbumId(albumDto.getAlbumId());
         album.setAlbumName(albumDto.getAlbumName());
-        album.setCreatedAt(albumDto.getCreatedAt());
+        album.setCreatedDate(albumDto.getCreatedDate());
+        album.setModifiedDate(albumDto.getModifiedDate());
         return album;
     }
 

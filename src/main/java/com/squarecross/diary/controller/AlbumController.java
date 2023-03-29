@@ -6,12 +6,11 @@ import com.squarecross.diary.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -19,19 +18,25 @@ import java.util.List;
 public class AlbumController {
 
     @Autowired
-    AlbumService albumService;
+    private AlbumService albumService;
 
     @GetMapping
-    public String getAlbumList(Model model,
-                            HttpSession session) {
+    public String getAlbumList(Model model, HttpSession session) {
         UserDto userDto = (UserDto) session.getAttribute("userDto");
         List<AlbumDto> albumDtos = albumService.getAlbumList(userDto.getLoginId());
+        AlbumDto albumDto = new AlbumDto();
         model.addAttribute("albumDtos", albumDtos);
-        return "album/album";
+        return "album/albumList";
     }
 
-//    @GetMapping("/create")
-//    public String createAlbum(@ModelAttribute AlbumDto albumDto) {
-//
+//    @PostMapping("/new")
+//    public String saveAlbum(@ModelAttribute AlbumDto albumDto,
+//                            BindingResult result,
+//                            HttpSession session) {
+
+//        if (result.hasErrors()) {
+            // 모달창을 다시 띄우고 오류 메시지 출력
+//        }
 //    }
+
 }
